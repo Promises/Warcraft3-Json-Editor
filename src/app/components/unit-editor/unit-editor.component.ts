@@ -55,10 +55,7 @@ export class UnitEditorComponent implements OnInit {
   private OnLoaded(): void {
     console.log('loaded');
     this.loading = false;
-    this.worldEditService.LoadUnitFieldConstants().then((data) => {
 
-      // console.log(data.get('uabi').slk);
-    });
   }
 
   private ImportSlkUnits(filenames: Electron.OpenDialogReturnValue): Promise<boolean> {
@@ -192,16 +189,19 @@ export class UnitEditorComponent implements OnInit {
     const saveobj: {} = {original: {}, custom: {}};
     for (const [key, value] of this.UnitMap.entries()) {
       const obj: any[] = [];
+      const baseUNit: WCUnit = this.worldEditService.GetBaseUnit(value.baseUnit);
       for (const field in value) {
         if (value.hasOwnProperty(field)) {
           if (field !== 'isCustom' && field !== 'baseUnit') {
+            if (value[field] !== baseUNit[field]) {
+              const attribute: {} = {
+                id: field,
+                type: this.worldEditService.GetUnitFieldData(field).type,
+                value: value[field],
+              };
+              obj.push(attribute);
+            }
 
-            const attribute: {} = {
-              id: field,
-              type: this.worldEditService.GetUnitFieldData(field).type,
-              value: value[field],
-            };
-            obj.push(attribute);
           }
         }
 

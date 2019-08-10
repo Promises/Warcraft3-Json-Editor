@@ -10,6 +10,7 @@ import { UnitFieldsMap } from '../../data/Fields';
 })
 export class WorldEditService {
   private WEStrings: Map<string, string> = new Map<string, string>();
+  private DefaultUnits: Map<string, WCUnit> = new Map<string, WCUnit>();
   private FieldData: Map<string, UnitField> = new Map<string, UnitField>();
   private SlkFieldBindings: Map<string, string> = new Map<string, string>();
   private SlkFileNames: string[] = [
@@ -23,6 +24,12 @@ export class WorldEditService {
   public FIELD_ID_INDEXED: string = 'INDX';
 
   constructor() {
+
+    this.LoadUnitFieldConstants().then((data) => {
+      this.LoadDefaultUnits();
+
+      // console.log(data.get('uabi').slk);
+    });
 
   }
 
@@ -302,6 +309,51 @@ export class WorldEditService {
         console.log('CleanType', `Couldn't find: ${this.FieldData.get(fieldName).type}`);
         return data;
     }
+  }
+
+  private LoadDefaultUnits(): void {
+    readFile(path.join(__dirname, '..', 'DefaultUnits.json'), (err, data: any) => {
+      const unitData: any = JSON.parse(data);
+      // console.log('loaded field data');
+      for (const key in unitData) {
+        if (unitData.hasOwnProperty(key)) {
+          const u: WCUnit = new WCUnit({isCustom: false});
+          for (const field in unitData[key]) {
+            if (unitData[key].hasOwnProperty(field)) {
+              let fld = this.SlkFieldToUnitField(field);
+              if (fld) {
+                let d: string = unitData[key][field];
+                if (d.startsWith('"')) {
+                  d = d.substr(1, d.length - 2);
+
+                }
+                if (d === '_' || d === '-') {
+                  d = '';
+                }
+                u[fld] = this.CleanType(fld, d);
+              }
+            }
+          }
+          this.DefaultUnits.set(key, u);
+
+        }
+
+        // if (fieldData.hasOwnProperty(key)) {
+        //   if (UnitFieldsMap.has(key)) {
+        //     if (fieldData[key].type !== UnitFieldsMap.get(key).type) {
+        //       console.log(key);
+        //     }
+        //   }
+        //   this.FieldData.set(key, fieldData[key]);
+        // }
+      }
+
+
+    });
+  }
+
+  public GetBaseUnit(baseUnit: string): WCUnit {
+    return this.DefaultUnits.get(baseUnit);
   }
 }
 
