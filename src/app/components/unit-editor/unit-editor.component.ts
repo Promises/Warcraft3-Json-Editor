@@ -114,14 +114,13 @@ export class UnitEditorComponent implements OnInit {
           const UnitMap: Map<string, WCUnit> = new Map<string, WCUnit>();
 
           for (const unit in this.UnitData.custom) {
-            if (this.UnitData.custom[unit]) {
+            if (this.UnitData.custom.hasOwnProperty(unit)) {
               const relation: string[] = unit.split(':');
               const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
               for (const attr of this.UnitData.custom[unit]) {
                 u[attr.id] = attr.value;
               }
               UnitMap.set(relation[0], u);
-
             }
           }
           this.UnitMap = UnitMap;
@@ -195,7 +194,7 @@ export class UnitEditorComponent implements OnInit {
       const obj: any[] = [];
       for (const field in value) {
         if (value.hasOwnProperty(field)) {
-          if (field !== 'isCustom' && field !== 'baseUnit' && value[field]) {
+          if (field !== 'isCustom' && field !== 'baseUnit') {
 
             const attribute: {} = {
               id: field,
