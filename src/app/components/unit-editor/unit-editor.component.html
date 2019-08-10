@@ -1,0 +1,40 @@
+<nz-layout>
+  <nz-sider>
+    <form nz-form [nzLayout]="'inline'" [formGroup]="filterForm">
+      <nz-form-item>
+        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+          <input formControlName="filterValue" type="text" nz-input placeholder="Search units"/>
+        </nz-input-group>
+        <ng-template #suffixIconButton>
+          <button nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>
+        </ng-template>
+      </nz-form-item>
+    </form>
+    <ul nz-menu nzMode="inline" class="sider-menu" *ngIf="HasLoadedData()">
+      <li nz-menu-item *ngFor="let entry of FilteredUnitMap | keyvalue" (click)="SelectUnit(entry)">{{entry.key}}{{entry.value.GetName()}}</li>
+
+    </ul>
+
+
+  </nz-sider>
+  <nz-content>
+
+    <div nz-row>
+      <div nz-col nzSpan="12">col-12</div>
+      <div nz-col nzSpan="12">col-12</div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="8">col-8</div>
+      <div nz-col nzSpan="8">col-8</div>
+      <div nz-col nzSpan="8">col-8</div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6">col-6</div>
+      <div nz-col nzSpan="6">col-6</div>
+      <div nz-col nzSpan="6">col-6</div>
+      <div nz-col nzSpan="6">col-6</div>
+    </div>
+  </nz-content>
+
+</nz-layout>
+

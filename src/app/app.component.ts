@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
-import { readFile } from 'fs';
-import { DataTypeMap, DataTypeString, UnitFieldsMap } from './data/Fields';
+import { createReadStream, readFile } from 'fs';
+import * as path from 'path';
+import { createInterface, ReadLine } from 'readline';
+import { WorldEditService } from './services/WorldEditService/world-edit.service';
+import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions;
+import App = Electron.App;
 
 @Component({
   selector: 'app-root',
@@ -11,35 +15,30 @@ import { DataTypeMap, DataTypeString, UnitFieldsMap } from './data/Fields';
 export class AppComponent {
   private title: string = 'Wc3JsonEditor';
   private keys: Map<string, boolean> = new Map<string, boolean>();
+  private loading: boolean = false;
 
-  constructor(private electronService: ElectronService) {
+
+  constructor(private electronService: ElectronService, private worldEditService: WorldEditService) {
+
   }
 
 
   private loadFileButton(): void {
-    this.electronService.remote.dialog.showOpenDialog({}, (filenames) => {
-      if (filenames) {
-        readFile(filenames[0], (err, data) => {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          const jdata = JSON.parse(data);
-          if (jdata.custom) {
-            for (let unit in jdata.custom) {
-              for (let key in jdata.custom[unit]) {
-                if (jdata.custom[unit][key].type) {
-                  if (DataTypeMap.get(jdata.custom[unit][key].type) !== UnitFieldsMap.get(jdata.custom[unit][key].id).type) {
-                    console.log(jdata.custom[unit][key]);
-
-                  }
-                }
-
-              }
-            }
-          }
-        });
-      }
+    // readFile(path.join(__dirname, '..', 'WorldEditStrings.txt'), (err, data) => {
+    //   console.log(data);
+    // });
+    this.loading = true;
+    this.worldEditService.LoadWorldEditString().then(() => {
+      this.loading = false;
     });
+  }
+
+
+  private HasString(): boolean {
+    return this.worldEditService.HasWorldEditString('WESTRING_QUESTMESSAGE_COMPLETED');
+  }
+
+  private GetString(): string {
+    return this.worldEditService.GetWorldEditString('WESTRING_QUESTMESSAGE_COMPLETED');
   }
 }

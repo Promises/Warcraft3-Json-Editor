@@ -1,0 +1,15 @@
+nz-layout {
+  min-height: 100%;
+  max-height: 100%;
+}
+
+nz-sider {
+  max-height: 100vh;
+  min-height: 100vh;
+  background-color: white;
+}
+
+.sider-menu {
+  max-height: calc(100vh - 2rem);
+  overflow-y: scroll;
+}
