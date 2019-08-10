@@ -252,7 +252,14 @@ export class WorldEditService {
                 }
               } else {
                 const fieldName: string = this.SlkFieldToUnitField(linedata[0]);
-                currentUnit[fieldName] = this.CleanType(fieldName, linedata[1]);
+                let data: string = linedata[1];
+                if (data.startsWith('"')) {
+                  data = data.substr(1, data.length - 2);
+                  if (data === '_' || data === '-') {
+                    data = '';
+                  }
+                }
+                currentUnit[fieldName] = this.CleanType(fieldName, data);
               }
 
             } else {
