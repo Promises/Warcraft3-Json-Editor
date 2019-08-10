@@ -208,7 +208,6 @@ export class UnitEditorComponent implements OnInit {
       }
       saveobj['custom'][key + ':' + value.baseUnit] = obj;
     }
-    // console.log(saveobj);
     if (p.filePath) {
       writeFileSync(p.filePath, JSON.stringify(saveobj));
     }
