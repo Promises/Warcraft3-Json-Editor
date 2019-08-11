@@ -28,6 +28,9 @@ export class UnitEditorComponent implements OnInit {
   private filterForm: FormGroup;
   private currentLoadedFile: string;
   private hasLoadedJson: boolean = false;
+  private currentForm: FormGroup;
+  private selectedUnit: KeyValue<string, WCUnit>;
+  private WEStrings: Map<string, string>;
 
   constructor(private worldEditService: WorldEditService,
               private electronMenu: ElectronMenuService,
@@ -41,7 +44,8 @@ export class UnitEditorComponent implements OnInit {
     this.electronMenu.GetOpenSlkFolderSubject().subscribe((data) => this.OpenSlkFolderDialog(data));
     this.electronMenu.GetSaveFileSubject().subscribe((data) => this.SaveFile(data));
     this.electronMenu.GetExportFileSubject().subscribe((data) => this.ExportFileDialog(data, false));
-    this.worldEditService.LoadWorldEditString().then(() => {
+    this.worldEditService.LoadWorldEditString().then((data) => {
+      this.WEStrings = data;
       this.OnLoaded();
     });
 
@@ -49,14 +53,12 @@ export class UnitEditorComponent implements OnInit {
       filterValue: [null]
     });
     this.filterForm.controls.filterValue.valueChanges.subscribe((value => {
-      console.log(value);
       this.FilterUnits(value);
     }));
   }
 
 
   private OnLoaded(): void {
-    console.log('loaded');
     this.loading = false;
 
   }
@@ -67,7 +69,6 @@ export class UnitEditorComponent implements OnInit {
           if (this.worldEditService.SlkFilesExists(filenames.filePaths[0])) {
             this.currentLoadedFile = filenames.filePaths[0] + '/Units.json';
 
-            console.log('found all files');
             this.worldEditService.SlkParse(filenames.filePaths[0]).then((data => {
               this.hasData = true;
               this.UnitMap = data;
@@ -77,25 +78,6 @@ export class UnitEditorComponent implements OnInit {
           } else {
             reject(false);
           }
-          // readFile(filenames.filePaths[0], (err, data: any) => {
-          //   this.UnitData = JSON.parse(data);
-          //   const UnitMap: Map<string, WCUnit> = new Map<string, WCUnit>();
-          //
-          //   for (const unit in this.UnitData.custom) {
-          //     if (this.UnitData.custom[unit]) {
-          //       const relation: string[] = unit.split(':');
-          //       const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
-          //       for (const attr of this.UnitData.custom[unit]) {
-          //         u[attr.id] = attr.value;
-          //       }
-          //       // console.log(u);
-          //       UnitMap.set(relation[0], u);
-          //
-          //     }
-          //   }
-          //   this.UnitMap = UnitMap;
-          //   return resolve(true);
-          // });
         }
       );
     } else {
@@ -160,12 +142,14 @@ export class UnitEditorComponent implements OnInit {
   }
 
   public HasLoadedData(): boolean {
-    // console.log(this.hasData);
     return this.hasData;
   }
 
   private SelectUnit(entry: KeyValue<string, WCUnit>): void {
-    console.log(entry);
+    this.currentForm = this.worldEditService.CreateUnitForm(entry.value);
+    this.selectedUnit = entry;
+    this.changeDetector.detectChanges();
+
   }
 
   private FilterUnits(query: string): void {
@@ -173,6 +157,13 @@ export class UnitEditorComponent implements OnInit {
     this.UnitMap.forEach((value, key) => {
       if (key.includes(query)) {
         filterMap.set(key, value);
+        return;
+      }
+      if (value.GetName()) {
+        if (value.GetName().toLowerCase().includes(query.toLowerCase())) {
+          filterMap.set(key, value);
+          return;
+        }
       }
     });
     this.FilteredUnitMap = filterMap;
@@ -201,8 +192,6 @@ export class UnitEditorComponent implements OnInit {
   }
 
   private FinishedLoadingJson(data: any): void {
-    console.log('finished loadin');
-    console.log(this.UnitMap);
     this.hasData = true;
     this.FilterUnits('');
     this.changeDetector.detectChanges();

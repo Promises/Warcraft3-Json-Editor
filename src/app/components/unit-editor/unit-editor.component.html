@@ -11,29 +11,68 @@
       </nz-form-item>
     </form>
     <ul nz-menu nzMode="inline" class="sider-menu" *ngIf="HasLoadedData()">
-      <li nz-menu-item *ngFor="let entry of FilteredUnitMap | keyvalue" (click)="SelectUnit(entry)">{{entry.key}}{{entry.value.GetName()}}</li>
+      <li nz-menu-item *ngFor="let entry of FilteredUnitMap | keyvalue"
+          (click)="SelectUnit(entry)">{{entry.key}}{{entry.value.GetName()}}</li>
 
     </ul>
 
 
   </nz-sider>
   <nz-content>
+    <div class="inner-content" *ngIf="selectedUnit">
 
-    <div nz-row>
-      <div nz-col nzSpan="12">col-12</div>
-      <div nz-col nzSpan="12">col-12</div>
+
+
+      <form [formGroup]="currentForm">
+          <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+              <nz-form-item nzFlex>
+                <nz-form-label [nzFor]="'field' + 'unam'">{{ WEStrings.get('unam')}}</nz-form-label>
+                <nz-form-control>
+                  <input
+                    nz-input
+                    placeholder="placeholder"
+                    [formControlName]="'unam'"
+                    [attr.id]="'field' + 'unam'"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+
+          </div>
+          <div nz-row>
+            <div nz-col [nzSpan]="24" class="search-area">
+              <button nz-button [nzType]="'primary'">Search</button>
+
+            </div>
+          </div>
+
+
+        <div nz-row>
+          <div nz-col nzSpan="12">Currently editing {{selectedUnit.key}} - {{selectedUnit.value.GetName()}}</div>
+          <div nz-col nzSpan="12">based on {{selectedUnit.value.baseUnit}}</div>
+        </div>
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <span for="cb-unam" class="checkbox-custom-label">{{WEStrings.get('unam')}}</span>
+
+            <input class="checkbox-custom" type="text" id="cb-unam" formControlName="unam">
+          </div>
+          <div nz-col nzSpan="8">col-8</div>
+          <div nz-col nzSpan="8">col-8</div>
+        </div>
+        <div nz-row>
+          <div nz-col nzSpan="6">col-6</div>
+          <div nz-col nzSpan="6">col-6</div>
+          <div nz-col nzSpan="6">col-6</div>
+          <div nz-col nzSpan="6">col-6</div>
+        </div>
+      </form>
+
+
     </div>
-    <div nz-row>
-      <div nz-col nzSpan="8">col-8</div>
-      <div nz-col nzSpan="8">col-8</div>
-      <div nz-col nzSpan="8">col-8</div>
-    </div>
-    <div nz-row>
-      <div nz-col nzSpan="6">col-6</div>
-      <div nz-col nzSpan="6">col-6</div>
-      <div nz-col nzSpan="6">col-6</div>
-      <div nz-col nzSpan="6">col-6</div>
-    </div>
+
   </nz-content>
 
 </nz-layout>
