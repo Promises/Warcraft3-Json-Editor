@@ -11,6 +11,7 @@ export class ElectronMenuService {
   private clickedOpenFile: Subject<boolean> = new Subject<boolean>();
   private clickedOpenFolder: Subject<boolean> = new Subject<boolean>();
   private clickedExportFile: Subject<boolean> = new Subject<boolean>();
+  private clickedSaveFile: Subject<boolean> = new Subject<boolean>();
 
   constructor(private electronService: ElectronService) {
     const Menu: any = this.electronService.remote.Menu;
@@ -42,13 +43,32 @@ export class ElectronMenuService {
             }
           },
           {
+            label: 'Save',
+            accelerator: 'CmdOrCtrl+S',
+            click: () => {
+              console.log('save');
+              this.clickedSaveFile.next(true); // Same as export "for now"
+
+            }
+          },
+          {
+            label: 'Save As',
+            accelerator: 'CmdOrCtrl+Shift+S',
+            click: () => {
+              console.log('save as');
+              this.clickedExportFile.next(true); // Same as export "for now"
+            }
+          },
+          {
             label: 'Import Slk', click: () => {
               this.clickedOpenFolder.next(true);
             }
           },
           {type: 'separator'},
           {
-            label: 'Export File', click: () => {
+            label: 'Export File',
+            accelerator: 'CmdOrCtrl+Shift+S',
+            click: () => {
               this.clickedExportFile.next(true);
             }
           },
@@ -142,8 +162,12 @@ export class ElectronMenuService {
   public GetOpenSlkFolderSubject(): Subject<boolean> {
     return this.clickedOpenFolder;
   }
+
   public GetExportFileSubject(): Subject<boolean> {
     return this.clickedExportFile;
+  }
+  public GetSaveFileSubject(): Subject<boolean> {
+    return this.clickedSaveFile;
   }
 
 }

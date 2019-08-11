@@ -26,6 +26,7 @@ export class UnitEditorComponent implements OnInit {
   private FilteredUnitMap: Map<string, WCUnit>;
   private filterForm: FormGroup;
   private currentLoadedFile: string;
+  private hasLoadedJson: boolean = false;
 
   constructor(private worldEditService: WorldEditService,
               private electronMenu: ElectronMenuService,
@@ -37,7 +38,8 @@ export class UnitEditorComponent implements OnInit {
   public ngOnInit(): void {
     this.electronMenu.GetOpenFileSubject().subscribe((data) => this.OpenJsonDialog(data));
     this.electronMenu.GetOpenSlkFolderSubject().subscribe((data) => this.OpenSlkFolderDialog(data));
-    this.electronMenu.GetExportFileSubject().subscribe((data) => this.ExportFileDialog(data));
+    this.electronMenu.GetSaveFileSubject().subscribe((data) => this.SaveFile(data));
+    this.electronMenu.GetExportFileSubject().subscribe((data) => this.ExportFileDialog(data, false));
     this.worldEditService.LoadWorldEditString().then(() => {
       this.OnLoaded();
     });
@@ -121,6 +123,7 @@ export class UnitEditorComponent implements OnInit {
             }
           }
           this.UnitMap = UnitMap;
+          this.hasLoadedJson = true;
           return resolve(true);
         });
       });
@@ -159,6 +162,7 @@ export class UnitEditorComponent implements OnInit {
       this.LoadJsonObject(filenames).then((d) => {
         this.hasData = true;
         this.FilterUnits('');
+
         this.changeDetector.detectChanges();
       });
     });
@@ -171,21 +175,33 @@ export class UnitEditorComponent implements OnInit {
       ]
     }).then((filenames) => {
       this.ImportSlkUnits(filenames).then((d) => {
-        console.log('cheers');
+        this.hasLoadedJson = false;
       });
     });
   }
 
+  private SaveFile(data: boolean): void {
+    if (this.hasLoadedJson) {
+      this.SaveJsonFile(this.currentLoadedFile, true);
+    } else {
+      this.ExportFileDialog(data, true);
+    }
+  }
 
-  private ExportFileDialog(data: boolean): void {
+
+  private ExportFileDialog(data: boolean, setDefault: boolean): void {
     this.electronService.remote.dialog.showSaveDialog({
       defaultPath: this.currentLoadedFile,
+      filters: [
+        {name: 'Wc3 Json', extensions: ['json']},
+        // { name: 'Wc3 Object', extensions: ['w3u'] }, // TODO: Would be practical to save directly to w3u
+      ]
     }).then((p) => {
-      this.SaveJsonFile(p);
+      this.SaveJsonFile(p.filePath, setDefault);
     });
   }
 
-  private SaveJsonFile(p: Electron.SaveDialogReturnValue): void {
+  private SaveJsonFile(filePath: string, setDefault: boolean): void {
     const saveobj: {} = {original: {}, custom: {}};
     for (const [key, value] of this.UnitMap.entries()) {
       const obj: any[] = [];
@@ -208,8 +224,13 @@ export class UnitEditorComponent implements OnInit {
       }
       saveobj['custom'][key + ':' + value.baseUnit] = obj;
     }
-    if (p.filePath) {
-      writeFileSync(p.filePath, JSON.stringify(saveobj));
+    if (filePath) {
+      writeFileSync(filePath, JSON.stringify(saveobj));
+      if (setDefault) {
+        this.hasLoadedJson = true;
+        this.currentLoadedFile = filePath;
+      }
+
     }
 
   }
