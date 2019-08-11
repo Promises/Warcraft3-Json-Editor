@@ -9,6 +9,7 @@ import { WCUnit } from '../../data/Unit';
 import { log } from 'util';
 import { KeyValue } from '@angular/common';
 import * as path from 'path';
+import * as Translator from 'wc3maptranslator';
 
 
 @Component({
@@ -109,21 +110,45 @@ export class UnitEditorComponent implements OnInit {
       return new Promise<boolean>((resolve, reject) => {
         readFile(filenames.filePaths[0], (err, data: any) => {
           this.currentLoadedFile = filenames.filePaths[0];
-          this.UnitData = JSON.parse(data);
-          const UnitMap: Map<string, WCUnit> = new Map<string, WCUnit>();
-
-          for (const unit in this.UnitData.custom) {
-            if (this.UnitData.custom.hasOwnProperty(unit)) {
-              const relation: string[] = unit.split(':');
-              const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
-              for (const attr of this.UnitData.custom[unit]) {
-                u[attr.id] = attr.value;
-              }
-              UnitMap.set(relation[0], u);
-            }
-          }
-          this.UnitMap = UnitMap;
+          const ud: any = JSON.parse(data);
+          this.UnitMap = this.ParseJsonObject(ud);
           this.hasLoadedJson = true;
+          return resolve(true);
+        });
+      });
+    } else {
+      return new Promise<boolean>(((resolve, reject) => {
+        reject(false);
+      }));
+    }
+  }
+
+  private ParseJsonObject(data: any): Map<string, WCUnit> {
+    const UnitMap: Map<string, WCUnit> = new Map<string, WCUnit>();
+
+    for (const unit in data.custom) {
+      if (data.custom.hasOwnProperty(unit)) {
+        const relation: string[] = unit.split(':');
+        const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
+        for (const attr of data.custom[unit]) {
+          u[attr.id] = attr.value;
+        }
+        UnitMap.set(relation[0], u);
+      }
+    }
+    this.UnitData = data;
+    return UnitMap;
+  }
+
+  private LoadWc3UnitObject(filenames: Electron.OpenDialogReturnValue): Promise<boolean> {
+    if (filenames.filePaths) {
+      return new Promise<boolean>((resolve, reject) => {
+
+        readFile(filenames.filePaths[0], (err, data: any) => {
+          const result: any = new Translator.Objects.warToJson('units', data);
+          this.UnitMap = this.ParseJsonObject(result.json);
+          this.currentLoadedFile = path.dirname(filenames.filePaths[0]) + '/Units.json';
+          this.hasLoadedJson = false;
           return resolve(true);
         });
       });
@@ -156,16 +181,31 @@ export class UnitEditorComponent implements OnInit {
   private OpenJsonDialog(data: boolean): void {
     this.electronService.remote.dialog.showOpenDialog({
       properties: ['openFile'], filters: [
+        {name: 'Supported files', extensions: ['json', 'w3u']},
         {name: 'Warcraft 3 Object Json', extensions: ['json']},
+        {name: 'Warcraft 3 Units Object ', extensions: ['w3u']},
       ]
     }).then((filenames) => {
-      this.LoadJsonObject(filenames).then((d) => {
-        this.hasData = true;
-        this.FilterUnits('');
-
-        this.changeDetector.detectChanges();
-      });
+      if (filenames.filePaths && filenames.filePaths[0]) {
+        if (filenames.filePaths[0].endsWith('.w3u')) {
+          this.LoadWc3UnitObject(filenames).then((d) => {
+            this.FinishedLoadingJson(d);
+          });
+        } else if ((filenames.filePaths[0].endsWith('.json'))) {
+          this.LoadJsonObject(filenames).then((d) => {
+            this.FinishedLoadingJson(d);
+          });
+        }
+      }
     });
+  }
+
+  private FinishedLoadingJson(data: any): void {
+    console.log('finished loadin');
+    console.log(this.UnitMap);
+    this.hasData = true;
+    this.FilterUnits('');
+    this.changeDetector.detectChanges();
   }
 
   private OpenSlkFolderDialog(data: boolean): void { // NOTE: USE base unit 'nntg' for these
