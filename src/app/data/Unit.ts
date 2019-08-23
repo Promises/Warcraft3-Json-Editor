@@ -10,7 +10,7 @@ export class WCUnit {
   utyp?: string;
   uabi?: string;
   ua2g?: string;
-  ides?: string;
+  // ides?: string; // Cant find a use for it, only causing issues
   ua1g?: string;
   ubsl?: string;
   ua1t?: string;
@@ -171,6 +171,21 @@ export class WCUnit {
   constructor(data: Partial<WCUnit>) {
     Object.assign(this, data);
   }
+
+
+  public setValues(data: Partial<WCUnit>): void {
+    Object.assign(this, data);
+  }
+
+
+  public setDefaults(data: Partial<WCUnit>, baseUnitId: string): void {
+
+    Object.assign(this, data);
+    this.isCustom = true;
+    this.baseUnit = baseUnitId;
+
+  }
+
 
 }
 

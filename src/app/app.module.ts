@@ -4,32 +4,34 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxElectronModule } from 'ngx-electron';
-import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { UnitEditorComponent } from './components/unit-editor/unit-editor.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SafePipe } from './safe.pipe';
 
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
     AppComponent,
-    UnitEditorComponent
+    UnitEditorComponent,
+    SafePipe
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgxElectronModule,
-    NgZorroAntdModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -36,7 +36,7 @@ export class UnitEditorComponent implements OnInit {
               private electronMenu: ElectronMenuService,
               private electronService: ElectronService,
               private changeDetector: ChangeDetectorRef,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,) {
   }
 
   public ngOnInit(): void {
@@ -62,6 +62,7 @@ export class UnitEditorComponent implements OnInit {
     this.loading = false;
 
   }
+
 
   private ImportSlkUnits(filenames: Electron.OpenDialogReturnValue): Promise<boolean> {
     if (filenames.filePaths) {
@@ -112,6 +113,7 @@ export class UnitEditorComponent implements OnInit {
       if (data.custom.hasOwnProperty(unit)) {
         const relation: string[] = unit.split(':');
         const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
+        u.setDefaults(this.worldEditService.GetBaseUnit(u.baseUnit), u.baseUnit);
         for (const attr of data.custom[unit]) {
           u[attr.id] = attr.value;
         }
@@ -146,21 +148,39 @@ export class UnitEditorComponent implements OnInit {
   }
 
   private SelectUnit(entry: KeyValue<string, WCUnit>): void {
+    if (entry.value.utub) {
+      entry.value.utub = entry.value.utub.split('|n').join('\n');
+    }
     this.currentForm = this.worldEditService.CreateUnitForm(entry.value);
     this.selectedUnit = entry;
+
+    console.log(entry);
+
     this.changeDetector.detectChanges();
+    this.currentForm.valueChanges.subscribe((changes) => {
+      this.FormChanges(changes);
+    });
+
 
   }
 
   private FilterUnits(query: string): void {
     const filterMap: Map<string, WCUnit> = new Map<string, WCUnit>();
+    let isValid: boolean = true;
+    try {
+      // tslint:disable-next-line:no-unused-expression
+      new RegExp(query);
+    } catch (e) {
+      isValid = false;
+      query = '';
+    }
     this.UnitMap.forEach((value, key) => {
-      if (key.includes(query)) {
+      if (key.search(new RegExp(query)) >= 0) {
         filterMap.set(key, value);
         return;
       }
       if (value.GetName()) {
-        if (value.GetName().toLowerCase().includes(query.toLowerCase())) {
+        if (value.GetName().search(new RegExp(query)) >= 0) {
           filterMap.set(key, value);
           return;
         }
@@ -223,14 +243,53 @@ export class UnitEditorComponent implements OnInit {
       defaultPath: this.currentLoadedFile,
       filters: [
         {name: 'Wc3 Json', extensions: ['json']},
-        // { name: 'Wc3 Object', extensions: ['w3u'] }, // TODO: Would be practical to save directly to w3u
+        // {name: 'Wc3 Object', extensions: ['w3u']}, // TODO: Would be practical to save directly to w3u
       ]
     }).then((p) => {
+      // this.SaveObjectFile(p.filePath, setDefault);
       this.SaveJsonFile(p.filePath, setDefault);
     });
   }
 
   private SaveJsonFile(filePath: string, setDefault: boolean): void {
+    const saveobj: {} = {original: {}, custom: {}};
+    for (const [key, value] of this.UnitMap.entries()) {
+      const obj: any[] = [];
+      const baseUNit: WCUnit = this.worldEditService.GetBaseUnit(value.baseUnit);
+      if (value.utub) {
+        value.utub = value.utub.split('\n').join('|n');
+      }
+      for (const field in value) {
+
+        if (value.hasOwnProperty(field)) {
+          if (field !== 'isCustom' && field !== 'baseUnit') {
+            if (value[field] !== baseUNit[field]) {
+              const attribute: {} = {
+                id: field,
+                type: this.worldEditService.GetUnitFieldData(field).type,
+                value: value[field],
+              };
+              obj.push(attribute);
+            }
+
+          }
+        }
+
+      }
+      saveobj['custom'][key + ':' + value.baseUnit] = obj;
+    }
+    if (filePath) {
+      writeFileSync(filePath, JSON.stringify(saveobj, null, 2));
+      if (setDefault) {
+        this.hasLoadedJson = true;
+        this.currentLoadedFile = filePath;
+      }
+
+    }
+
+  }
+
+  private SaveObjectFile(filePath: string, setDefault: boolean): void {
     const saveobj: {} = {original: {}, custom: {}};
     for (const [key, value] of this.UnitMap.entries()) {
       const obj: any[] = [];
@@ -254,7 +313,9 @@ export class UnitEditorComponent implements OnInit {
       saveobj['custom'][key + ':' + value.baseUnit] = obj;
     }
     if (filePath) {
-      writeFileSync(filePath, JSON.stringify(saveobj));
+      const objResult = new Translator.Objects.jsonToWar('units', saveobj); // Custom units -> war3map.w3u
+      writeFileSync(filePath, objResult.buffer);
+      // Write(WarFile.Object.Unit, objResult.buffer);
       if (setDefault) {
         this.hasLoadedJson = true;
         this.currentLoadedFile = filePath;
@@ -263,4 +324,74 @@ export class UnitEditorComponent implements OnInit {
     }
 
   }
+
+  public FormattedText(text: string): string {
+    console.log('updating');
+    const regex = new RegExp('\\|C([0-9A-F]{8})((?:(?!\\|C).)*)\\|R', 'i');
+    let result = text.split('|n').join('<br>').split('\n').join('<br>');
+    let exec = regex.exec(result);
+    while (exec !== null) {
+      const index = exec.index;
+      const color = 'rgba(' + parseInt(exec[1].substr(2, 2), 16) + ', ' + parseInt(exec[1].substr(4, 2), 16) + ', ' + parseInt(exec[1].substr(6, 2), 16) + ', ' + (parseInt(exec[1].substr(0, 2), 16) / 255) + ')';
+      result = result.substr(0, index) + `<span style="color: ${color}">` + result.substr(index + 2 + exec[1].length, exec[2].length) + '</span>' + result.substr(index + 4 + exec[1].length + exec[2].length);
+      exec = regex.exec(result);
+    }
+    return result;
+  }
+
+  private FormChanges(changes: any): void {
+    console.log(changes);
+    this.selectedUnit.value.setValues(changes);
+    this.changeDetector.detectChanges();
+
+  }
+
+
+  public generateUnitTooltip(): void {
+    const attacksEnabled: number = this.selectedUnit.value.uaen;
+    let value: string = '';
+    if (attacksEnabled === 1 || attacksEnabled === 3) {
+      value += '|cffffcc00Attack:|r '
+        + this.selectedUnit.value.ua1t.charAt(0).toUpperCase()
+        + this.selectedUnit.value.ua1t.substr(1) + '|n';
+      value += '|cffffcc00Cooldown:|r ' + this.selectedUnit.value.ua1c.toFixed(2) + '|n';
+      const baseDamage: number = this.selectedUnit.value.ua1b;
+      const damageNumberOfDice: number = this.selectedUnit.value.ua1d;
+      const damageSidesPerDie: number = this.selectedUnit.value.ua1s;
+      value += '|cffffcc00Damage:|r ' + (baseDamage + damageNumberOfDice)
+        + ' - ' + (baseDamage + damageNumberOfDice * damageSidesPerDie) + '|n';
+      value += '|cffffcc00Range:|r ' + (this.selectedUnit.value.ua1r === 128 ? 'Melee' : this.selectedUnit.value.ua1r) + '|n';
+    } else if (attacksEnabled === 2) {
+      value += '|cffffcc00Attack:|r ' + this.selectedUnit.value.ua2t.charAt(0).toUpperCase() +
+        +this.selectedUnit.value.ua2t.substr(1) + '|n';
+      value += '|cffffcc00Cooldown:|r ' + this.selectedUnit.value.ua2c.toFixed(2) + '|n';
+      const baseDamage: number = this.selectedUnit.value.ua2b;
+      const damageNumberOfDice: number = this.selectedUnit.value.ua2d;
+      const damageSidesPerDie: number = this.selectedUnit.value.ua2s;
+      value += '|cffffcc00Damage:|r ' + (baseDamage + damageNumberOfDice) + ' - '
+        + (baseDamage + damageNumberOfDice * damageSidesPerDie) + '|n';
+      value += '|cffffcc00Range:|r ' + (this.selectedUnit.value.ua2r === 128 ? 'Melee' : this.selectedUnit.value.ua2r) + '|n';
+    } else if (attacksEnabled === 0) {
+      value += '|cffffcc00Attack:|r None|n';
+      value += '|cffffcc00Range:|r ' + (this.selectedUnit.value.ua1r === 128 ? 'Melee' : this.selectedUnit.value.ua1r) + '|n';
+    }
+
+    if (attacksEnabled === 3) {
+      value += '|cffffcc00Attack(2):|r ' + this.selectedUnit.value.ua2t.charAt(0).toUpperCase() +
+        +this.selectedUnit.value.ua2t.substr(1) + '|n';
+      value += '|cffffcc00Cooldown(2):|r ' + this.selectedUnit.value.ua2c.toFixed(2) + '|n';
+      const baseDamage: number = this.selectedUnit.value.ua2b;
+      const damageNumberOfDice: number = this.selectedUnit.value.ua2d;
+      const damageSidesPerDie: number = this.selectedUnit.value.ua2s;
+      value += '|cffffcc00Damage(2):|r ' + (baseDamage + damageNumberOfDice) + ' - '
+        + (baseDamage + damageNumberOfDice * damageSidesPerDie) + '|n';
+      value += '|cffffcc00Range(2):|r ' + (this.selectedUnit.value.ua2r === 128 ? 'Melee' : this.selectedUnit.value.ua2r) + '|n';
+    }
+
+    value = value.split('|n').join('\n');
+
+    this.currentForm.controls.utub.patchValue(value);
+  }
+
+
 }

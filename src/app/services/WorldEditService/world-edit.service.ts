@@ -323,7 +323,7 @@ export class WorldEditService {
       utyp: [''],
       uabi: [''],
       ua2g: [''],
-      ides: [''],
+      // ides: [''],
       ua1g: [''],
       ubsl: [''],
       ua1t: [''],

@@ -1,79 +1,154 @@
-<nz-layout>
-  <nz-sider>
-    <form nz-form [nzLayout]="'inline'" [formGroup]="filterForm">
-      <nz-form-item>
-        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
-          <input formControlName="filterValue" type="text" nz-input placeholder="Search units"/>
-        </nz-input-group>
-        <ng-template #suffixIconButton>
-          <button nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>
-        </ng-template>
-      </nz-form-item>
-    </form>
-    <ul nz-menu nzMode="inline" class="sider-menu" *ngIf="HasLoadedData()">
-      <li nz-menu-item *ngFor="let entry of FilteredUnitMap | keyvalue"
-          (click)="SelectUnit(entry)">{{entry.key}}{{entry.value.GetName()}}</li>
-
-    </ul>
-
-
-  </nz-sider>
-  <nz-content>
-    <div class="inner-content" *ngIf="selectedUnit">
-
-
-
-      <form [formGroup]="currentForm">
-          <div nz-row [nzGutter]="24">
-            <div nz-col [nzSpan]="8">
-              <nz-form-item nzFlex>
-                <nz-form-label [nzFor]="'field' + 'unam'">{{ WEStrings.get('unam')}}</nz-form-label>
-                <nz-form-control>
-                  <input
-                    nz-input
-                    placeholder="placeholder"
-                    [formControlName]="'unam'"
-                    [attr.id]="'field' + 'unam'"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-
+<div class="container-fluid">
+  <div class="row" style="max-height: 100vh">
+    <div class="col-3"> <!-- Unit List -->
+      <div class="row">
+        <form>
+          <div class="form-group form-inline">
+            Search: <input class="form-control ml-2" type="text" [formControl]="filterForm.controls.filterValue"/>
           </div>
-          <div nz-row>
-            <div nz-col [nzSpan]="24" class="search-area">
-              <button nz-button [nzType]="'primary'">Search</button>
+        </form>
+      </div>
 
-            </div>
-          </div>
-
-
-        <div nz-row>
-          <div nz-col nzSpan="12">Currently editing {{selectedUnit.key}} - {{selectedUnit.value.GetName()}}</div>
-          <div nz-col nzSpan="12">based on {{selectedUnit.value.baseUnit}}</div>
-        </div>
-        <div nz-row>
-          <div nz-col nzSpan="8">
-            <span for="cb-unam" class="checkbox-custom-label">{{WEStrings.get('unam')}}</span>
-
-            <input class="checkbox-custom" type="text" id="cb-unam" formControlName="unam">
-          </div>
-          <div nz-col nzSpan="8">col-8</div>
-          <div nz-col nzSpan="8">col-8</div>
-        </div>
-        <div nz-row>
-          <div nz-col nzSpan="6">col-6</div>
-          <div nz-col nzSpan="6">col-6</div>
-          <div nz-col nzSpan="6">col-6</div>
-          <div nz-col nzSpan="6">col-6</div>
-        </div>
-      </form>
-
-
+      <div class="row" style="max-height: calc(100vh - 110px);overflow-y: scroll;">
+        <table class="table table-striped table-hover">
+          <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Suffix</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr (click)="SelectUnit(entry)"
+              [ngClass]="selectedUnit && entry.key === selectedUnit.key ? 'bg-primary' : ''"
+              class="unit-entry"
+              *ngFor="let entry of FilteredUnitMap | keyvalue; index as i">
+            <th scope="row">{{ entry.key }}</th>
+            <td>
+              {{ entry.value.GetName() }}
+            </td>
+            <td>
+              {{ entry.value.unsf }}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <div class="col"> <!-- Editor -->
+      <div *ngIf="selectedUnit">
+        <form [formGroup]="currentForm">
+          <div class="form-group row">
+            <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputName" placeholder="Email" formControlName="unam">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="Unit-Ubertip" class="col-sm-2 col-form-label">Tooltip - Extended</label>
+            <div class="col-sm-10">
+              <div style="display: flex; overflow-x: hidden;">
+                                        <textarea
+                                          class="form-control"
+                                          id="Unit-Ubertip"
+                                          aria-describedby="tooltip - extended"
+                                          formControlName="utub"
+                                          placeholder="Tooltip - Extended"></textarea>
+                <div id="unit-preview"
+                     style="overflow-y: scroll;"
+                     class="form-control multi-color-textarea"
+                     [innerHTML]="FormattedText(currentForm.value.utub) | safe: 'html'">
+                  Loading
+                </div>
+              </div>
+              <div class="btn btn-block div-btn" tabindex="-1" (click)="generateUnitTooltip()">
+                Generate Tooltip
+              </div>
+            </div>
+          </div>
 
-  </nz-content>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-</nz-layout>
+
+<!--<nz-layout>-->
+<!--  <nz-sider>-->
+<!--    <form nz-form [nzLayout]="'inline'" [formGroup]="filterForm">-->
+<!--      <nz-form-item>-->
+<!--        <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">-->
+<!--          <input formControlName="filterValue" type="text" nz-input placeholder="Search units"/>-->
+<!--        </nz-input-group>-->
+<!--        <ng-template #suffixIconButton>-->
+<!--          <button nz-button nzType="primary" nzSearch><i nz-icon nzType="search"></i></button>-->
+<!--        </ng-template>-->
+<!--      </nz-form-item>-->
+<!--    </form>-->
+<!--    <ul nz-menu nzMode="inline" class="sider-menu" *ngIf="HasLoadedData()">-->
+<!--      <li nz-menu-item *ngFor="let entry of FilteredUnitMap | keyvalue"-->
+<!--          (click)="SelectUnit(entry)">{{entry.key}}{{entry.value.GetName()}}</li>-->
+
+<!--    </ul>-->
+
+
+<!--  </nz-sider>-->
+<!--  <nz-content>-->
+<!--    <div class="inner-content" *ngIf="selectedUnit">-->
+
+
+<!--      <form [formGroup]="currentForm">-->
+<!--          <div nz-row [nzGutter]="24">-->
+<!--            <div nz-col [nzSpan]="8">-->
+<!--              <nz-form-item nzFlex>-->
+<!--                <nz-form-label [nzFor]="'field' + 'unam'">{{ WEStrings.get('unam')}}</nz-form-label>-->
+<!--                <nz-form-control>-->
+<!--                  <input-->
+<!--                    nz-input-->
+<!--                    placeholder="placeholder"-->
+<!--                    [formControlName]="'unam'"-->
+<!--                    [attr.id]="'field' + 'unam'"-->
+<!--                  />-->
+<!--                </nz-form-control>-->
+<!--              </nz-form-item>-->
+<!--            </div>-->
+
+
+<!--          </div>-->
+<!--          <div nz-row>-->
+<!--            <div nz-col [nzSpan]="24" class="search-area">-->
+<!--              <button nz-button [nzType]="'primary'">Search</button>-->
+
+<!--            </div>-->
+<!--          </div>-->
+
+
+<!--        <div nz-row>-->
+<!--          <div nz-col nzSpan="12">Currently editing {{selectedUnit.key}} - {{selectedUnit.value.GetName()}}</div>-->
+<!--          <div nz-col nzSpan="12">based on {{selectedUnit.value.baseUnit}}</div>-->
+<!--        </div>-->
+<!--        <div nz-row>-->
+<!--          <div nz-col nzSpan="8">-->
+<!--            <span for="cb-unam" class="checkbox-custom-label">{{WEStrings.get('unam')}}</span>-->
+
+<!--            <input class="checkbox-custom" type="text" id="cb-unam" formControlName="unam">-->
+<!--          </div>-->
+<!--          <div nz-col nzSpan="8">col-8</div>-->
+<!--          <div nz-col nzSpan="8">col-8</div>-->
+<!--        </div>-->
+<!--        <div nz-row>-->
+<!--          <div nz-col nzSpan="6">col-6</div>-->
+<!--          <div nz-col nzSpan="6">col-6</div>-->
+<!--          <div nz-col nzSpan="6">col-6</div>-->
+<!--          <div nz-col nzSpan="6">col-6</div>-->
+<!--        </div>-->
+<!--      </form>-->
+
+
+<!--    </div>-->
+
+<!--  </nz-content>-->
+
+<!--</nz-layout>-->
 
