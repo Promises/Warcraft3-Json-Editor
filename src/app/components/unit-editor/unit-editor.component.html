@@ -37,34 +37,65 @@
     </div>
     <div class="col"> <!-- Editor -->
       <div *ngIf="selectedUnit">
-        <form [formGroup]="currentForm">
+        <form [formGroup]="currentForm" style="max-height: 100vh; overflow-y: scroll">
+          <!-- Section Abilities -->
+          <div class="card">
+            <h5 class="card-header">Techtree</h5>
+            <div class="card-body">
+              <app-string-field formControlName="uabi" fieldName="uabi"></app-string-field> <!-- Unit Abilities -->
+              <app-string-field formControlName="udaa" fieldName="udaa"></app-string-field> <!-- Default Active Ability -->
+            </div>
+          </div>
+          <!-- End Section Abilities -->
 
-          <app-string-field formControlName="unam" fieldName="unam"></app-string-field> <!-- Unit Name -->
-          <app-string-field formControlName="unsf" fieldName="unsf"></app-string-field> <!-- Unit Suffix -->
-          <app-string-field formControlName="uhot" fieldName="uhot"></app-string-field> <!-- Unit Hotkey -->
-          <app-string-field formControlName="utip" fieldName="utip"></app-string-field> <!-- Unit ToolTip - basic -->
-          <div class="form-group row">
-            <label for="utub" class="col-sm-2 col-form-label">{{worldEditService.FieldToName('utub')}}</label>
-            <div class="col-sm-10">
-              <div style="display: flex; overflow-x: hidden;">
+
+          <!-- Section TechTree -->
+          <div class="card">
+            <h5 class="card-header">Techtree</h5>
+            <div class="card-body">
+              <app-string-field formControlName="usei" fieldName="usei"></app-string-field> <!-- Items Sold -->
+              <app-string-field formControlName="ureq" fieldName="ureq"></app-string-field> <!-- Unit Requirements -->
+              <app-string-field formControlName="ubui" fieldName="ubui"></app-string-field> <!-- Structures built -->
+<!--              <app-string-field formControlName="useu" fieldName="useu"></app-string-field> &lt;!&ndash; Units Sold &ndash;&gt;-->
+              <app-string-field formControlName="uupt" fieldName="uupt"></app-string-field> <!-- Upgrades to -->
+            </div>
+          </div>
+          <!-- End Section TechTree -->
+
+          <!-- Section Text -->
+          <div class="card">
+            <h5 class="card-header">Text</h5>
+            <div class="card-body">
+              <app-string-field formControlName="unam" fieldName="unam"></app-string-field> <!-- Unit Name -->
+              <app-string-field formControlName="unsf" fieldName="unsf"></app-string-field> <!-- Unit Suffix -->
+              <app-string-field formControlName="uhot" fieldName="uhot"></app-string-field> <!-- Unit Hotkey -->
+              <app-string-field formControlName="utip" fieldName="utip"></app-string-field> <!-- Unit ToolTip - basic -->
+              <div class="form-group row">
+                <label for="utub" class="col-sm-2 col-form-label">{{worldEditService.FieldToName('utub')}}</label>
+                <div class="col-sm-10">
+                  <div style="display: flex; overflow-x: hidden;">
                                         <textarea
                                           class="form-control"
                                           id="utub"
                                           aria-describedby="tooltip - extended"
                                           formControlName="utub"
                                           [placeholder]="worldEditService.FieldToName('utub')"></textarea>
-                <div id="unit-preview"
-                     style="overflow-y: scroll;"
-                     class="form-control multi-color-textarea"
-                     [innerHTML]="FormattedText(currentForm.value.utub) | safe: 'html'">
-                  Loading
+                    <div id="unit-preview"
+                         style="overflow-y: scroll;"
+                         class="form-control multi-color-textarea"
+                         [innerHTML]="FormattedText(currentForm.value.utub) | safe: 'html'">
+                      Loading
+                    </div>
+                  </div>
+                  <div class="btn btn-block div-btn" tabindex="-1" (click)="generateUnitTooltip()">
+                    Generate Tooltip
+                  </div>
                 </div>
-              </div>
-              <div class="btn btn-block div-btn" tabindex="-1" (click)="generateUnitTooltip()">
-                Generate Tooltip
               </div>
             </div>
           </div>
+          <!-- End Section Text -->
+
 
         </form>
       </div>

@@ -1628,7 +1628,7 @@ WESTRING_OLTYPE_ITEM=Items
 
 WESTRING_ABOUTTITLE=About Warcraft III World Editor
 WESTRING_ABOUT_VERSION=Version
-WESTRING_ABOUT_COPYRIGHT=Copyright © 2002 - 2003 Blizzard Entertainment. All Rights Reserved.
+WESTRING_ABOUT_COPYRIGHT=Copyright ï¿½ 2002 - 2003 Blizzard Entertainment. All Rights Reserved.
 WESTRING_ABOUT_LINK=Blizzard Entertainment
 
 WESTRING_LICENSETITLE=Warcraft III World Editor - End User License Agreement
@@ -5133,7 +5133,7 @@ WESTRING_OE_CAT_TECHTREE=&Techtree
 WESTRING_OE_CAT_TEXT=Te&xt
 
 // Object Editor Unit fields
-WESTRING_UEVAL_UABI=Normal
+WESTRING_UEVAL_UABI=Ability List
 WESTRING_UEVAL_UDAA=Default Active Ability
 WESTRING_UEVAL_UHAB=Hero
 WESTRING_UEVAL_UMDL=Model File
