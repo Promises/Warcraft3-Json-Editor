@@ -10,6 +10,7 @@ import { log } from 'util';
 import { KeyValue } from '@angular/common';
 import * as path from 'path';
 import * as Translator from 'wc3maptranslator';
+import * as storage from 'electron-json-storage';
 
 
 @Component({
@@ -30,13 +31,12 @@ export class UnitEditorComponent implements OnInit {
   private hasLoadedJson: boolean = false;
   private currentForm: FormGroup;
   private selectedUnit: KeyValue<string, WCUnit>;
-  private WEStrings: Map<string, string>;
 
-  constructor(private worldEditService: WorldEditService,
+  constructor(public worldEditService: WorldEditService,
               private electronMenu: ElectronMenuService,
               private electronService: ElectronService,
               private changeDetector: ChangeDetectorRef,
-              private fb: FormBuilder,) {
+              private fb: FormBuilder) {
   }
 
   public ngOnInit(): void {
@@ -44,10 +44,6 @@ export class UnitEditorComponent implements OnInit {
     this.electronMenu.GetOpenSlkFolderSubject().subscribe((data) => this.OpenSlkFolderDialog(data));
     this.electronMenu.GetSaveFileSubject().subscribe((data) => this.SaveFile(data));
     this.electronMenu.GetExportFileSubject().subscribe((data) => this.ExportFileDialog(data, false));
-    this.worldEditService.LoadWorldEditString().then((data) => {
-      this.WEStrings = data;
-      this.OnLoaded();
-    });
 
     this.filterForm = this.fb.group({
       filterValue: [null]
@@ -55,6 +51,7 @@ export class UnitEditorComponent implements OnInit {
     this.filterForm.controls.filterValue.valueChanges.subscribe((value => {
       this.FilterUnits(value);
     }));
+    this.CheckAndLoadPastJson();
   }
 
 
@@ -283,6 +280,12 @@ export class UnitEditorComponent implements OnInit {
       if (setDefault) {
         this.hasLoadedJson = true;
         this.currentLoadedFile = filePath;
+        storage.set('lastjson', {currentLoadedFile: this.currentLoadedFile}, (error) => {
+            if (error) {
+              throw error;
+            }
+          }
+        );
       }
 
     }
@@ -394,4 +397,20 @@ export class UnitEditorComponent implements OnInit {
   }
 
 
+  private CheckAndLoadPastJson(): void {
+    storage.get('lastjson', (error, data) => {
+        if (error) {
+          throw error;
+        }
+
+        if (data.currentLoadedFile) {
+          if (existsSync(data.currentLoadedFile)) {
+            this.LoadJsonObject({filePaths: [data.currentLoadedFile]} as Electron.OpenDialogReturnValue).then((d) => {
+              this.FinishedLoadingJson(d);
+            });
+          }
+        }
+      }
+    );
+  }
 }

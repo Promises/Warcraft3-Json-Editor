@@ -24,8 +24,9 @@ export class WorldEditService {
   ];
   public FIELD_ID_INDEXED: string = 'INDX';
 
-  constructor(private fb: FormBuilder) {
 
+  constructor(private fb: FormBuilder) {
+    this.LoadWorldEditString();
     this.LoadUnitFieldConstants().then((data) => {
       this.LoadDefaultUnits();
 
@@ -527,6 +528,10 @@ export class WorldEditService {
 
   public GetBaseUnit(baseUnit: string): WCUnit {
     return this.DefaultUnits.get(baseUnit);
+  }
+
+  public FieldToName(field: string): string {
+    return this.WEStrings.get(this.GetUnitFieldData(field).displayName);
   }
 }
 

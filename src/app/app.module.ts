@@ -12,6 +12,7 @@ import en from '@angular/common/locales/en';
 import { UnitEditorComponent } from './components/unit-editor/unit-editor.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SafePipe } from './safe.pipe';
+import { StringFieldComponent } from './components/string-field/string-field.component';
 
 registerLocaleData(en);
 
@@ -19,7 +20,8 @@ registerLocaleData(en);
   declarations: [
     AppComponent,
     UnitEditorComponent,
-    SafePipe
+    SafePipe,
+    StringFieldComponent
   ],
   imports: [
     BrowserModule,
