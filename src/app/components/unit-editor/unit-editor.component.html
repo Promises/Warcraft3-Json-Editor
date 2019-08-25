@@ -25,7 +25,7 @@
               *ngFor="let entry of FilteredUnitMap | keyvalue; index as i">
             <th scope="row">{{ entry.key }}</th>
             <td>
-              {{ entry.value.GetName() }}
+              {{ FormattedText(entry.value.GetName()) }}
             </td>
             <td>
               {{ entry.value.unsf }}
@@ -35,7 +35,7 @@
         </table>
       </div>
     </div>
-    <div class="col"> <!-- Editor -->
+    <div class="col editor"> <!-- Editor -->
       <div *ngIf="selectedUnit">
         <form [formGroup]="currentForm" style="max-height: 100vh; overflow-y: scroll">
           <!-- Section Abilities -->
@@ -48,6 +48,20 @@
           </div>
           <!-- End Section Abilities -->
 
+          <!-- Section Combat -->
+          <div class="card">
+            <h5 class="card-header">Combat</h5>
+            <div class="card-body">
+              <app-integer-field formControlName="uacq" fieldName="uacq"></app-integer-field> <!-- Unit Acquisition Range -->
+              <app-drop-down-select-field
+                [options]="worldEditService.ArmourTypes"
+                formControlName="uarm"
+                fieldName="uarm">
+              </app-drop-down-select-field> <!-- Unit Acquisition Range -->
+              <app-target-list-field formControlName="ua1g" fieldName="ua1g"></app-target-list-field> <!-- AOE Targets 1 -->
+            </div>
+          </div>
+          <!-- End Section Combat -->
 
           <!-- Section TechTree -->
           <div class="card">

@@ -13,6 +13,9 @@ import { UnitEditorComponent } from './components/unit-editor/unit-editor.compon
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SafePipe } from './safe.pipe';
 import { StringFieldComponent } from './components/string-field/string-field.component';
+import { IntegerFieldComponent } from './components/integer-field/integer-field.component';
+import { TargetListFieldComponent } from './components/target-list-field/target-list-field.component';
+import { DropDownSelectFieldComponent } from './components/drop-down-select-field/drop-down-select-field.component';
 
 registerLocaleData(en);
 
@@ -21,7 +24,10 @@ registerLocaleData(en);
     AppComponent,
     UnitEditorComponent,
     SafePipe,
-    StringFieldComponent
+    StringFieldComponent,
+    IntegerFieldComponent,
+    TargetListFieldComponent,
+    DropDownSelectFieldComponent
   ],
   imports: [
     BrowserModule,

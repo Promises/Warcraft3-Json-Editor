@@ -1,1 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
+//@import "../node_modules/bootstrap/scss/bootstrap";
+//@import "assets/scss/darkly/scss/variables";
+@import "assets/scss/darkly/scss/bootstrap";
+@import "./assets/fa/css/all.css";
+
+//@import "./assets/scss/awesome-bootstrap-checkbox";
+
+.checkbox {
+  label {
+    cursor: pointer;
+    .checked {
+      color: green;
+    }
+    .unchecked {
+      color: gray;
+    }
+  }
+
+  input {
+    display: none;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+
+}
+
+

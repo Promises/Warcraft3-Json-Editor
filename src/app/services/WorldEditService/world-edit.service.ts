@@ -23,6 +23,13 @@ export class WorldEditService {
     'UnitWeapons.slk'
   ];
   public FIELD_ID_INDEXED: string = 'INDX';
+  public ArmourTypes: string[] = [
+    'Ethereal',
+    'Flesh',
+    'Metal',
+    'Stone',
+    'Wood'
+  ];
 
 
   constructor(private fb: FormBuilder) {

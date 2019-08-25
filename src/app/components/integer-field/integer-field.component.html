@@ -1,0 +1,13 @@
+<div class="form-group row">
+  <label [for]="'input'+fieldName" class="col-sm-2 col-form-label">{{weService.FieldToName(fieldName)}}</label>
+  <div class="col-sm-10">
+    <input
+      [value]="value"
+      [disabled]="disabled"
+      (change)="onChange($event.target.value)"
+      [placeholder]="weService.FieldToName(fieldName)"
+      type="number"
+      class="form-control"
+      [id]="'input'+fieldName">
+  </div>
+</div>

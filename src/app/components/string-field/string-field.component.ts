@@ -15,30 +15,30 @@ import { WorldEditService } from '../../services/WorldEditService/world-edit.ser
   ]
 })
 export class StringFieldComponent {
-  @Input() fieldName: string;
-  value: string;
-  active: boolean = false;
-  onChange: (value: string) => void;
-  onTouched: () => void;
-  disabled: boolean;
+  @Input() public fieldName: string;
+  public value: string;
+  public active: boolean = false;
+  public onChange: (value: string) => void;
+  public onTouched: () => void;
+  public disabled: boolean;
 
   constructor(public weService: WorldEditService) {
   }
 
-  registerOnChange(fn: any): void {
+  public registerOnChange(fn: any): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  public registerOnTouched(fn: any): void {
     this.onTouched = fn;
 
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
-  writeValue(value: string): void {
+  public writeValue(value: string): void {
     this.value = value ? value : '';
   }
 

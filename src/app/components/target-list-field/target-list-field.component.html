@@ -1,0 +1,603 @@
+<div class="form-group row">
+  <label [for]="'input'+fieldName" class="col-sm-2 col-form-label">{{weService.FieldToName(fieldName)}}</label>
+  <div class="col-sm-10">
+    <div id="Unit-Targs1" class="multi-check">
+      <ul>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Air">Air
+
+            <input id="Weapon-Targets-1-Air"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('air')"
+                   type="checkbox" tabindex="-1" value="air"/>
+
+            <span *ngIf="isChecked('air')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('air')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Alive">Alive
+
+            <input id="Weapon-Targets-1-Alive"
+                   (change)="SaveField($event)"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('alive')"
+                   type="checkbox" tabindex="-1" value="alive"/>
+
+            <span *ngIf="isChecked('alive')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('alive')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Allied">Allied
+
+            <input id="Weapon-Targets-1-Allied"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('allies')"
+                   type="checkbox" tabindex="-1" value="allies"/>
+
+            <span *ngIf="isChecked('allies')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('allies')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Ancient">Ancient
+
+            <input id="Weapon-Targets-1-Ancient"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('ancient')"
+                   type="checkbox" tabindex="-1" value="ancient"/>
+
+            <span *ngIf="isChecked('ancient')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('ancient')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Bridge">Bridge
+
+            <input id="Weapon-Targets-1-Bridge"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('bridge')"
+                   type="checkbox" tabindex="-1" value="bridge"/>
+
+            <span *ngIf="isChecked('bridge')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('bridge')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Dead">Dead
+
+            <input id="Weapon-Targets-1-Dead"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('dead')"
+                   type="checkbox" tabindex="-1" value="dead"/>
+
+            <span *ngIf="isChecked('dead')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('dead')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Debris">Debris
+
+            <input id="Weapon-Targets-1-Debris"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('debris')"
+                   type="checkbox" tabindex="-1" value="debris"/>
+
+            <span *ngIf="isChecked('debris')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('debris')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Decoration">Decoration
+
+            <input id="Weapon-Targets-1-Decoration"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('decoration')"
+                   type="checkbox" tabindex="-1" value="decoration"/>
+
+            <span *ngIf="isChecked('decoration')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('decoration')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+      </ul>
+      <ul>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Enemy">Enemy
+
+            <input id="Weapon-Targets-1-Enemy"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('enemies')"
+                   type="checkbox" tabindex="-1" value="enemies"/>
+
+            <span *ngIf="isChecked('enemies')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('enemies')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Friend">Friend
+
+            <input id="Weapon-Targets-1-Friend"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('friend')"
+                   type="checkbox" tabindex="-1" value="friend"/>
+
+            <span *ngIf="isChecked('friend')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('friend')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Ground">Ground
+
+            <input id="Weapon-Targets-1-Ground"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('ground')"
+                   type="checkbox" tabindex="-1" value="ground"/>
+
+            <span *ngIf="isChecked('ground')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('ground')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Hero">Hero
+
+            <input id="Weapon-Targets-1-Hero"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('hero')"
+                   type="checkbox" tabindex="-1" value="hero"/>
+
+            <span *ngIf="isChecked('hero')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('hero')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Invulnerable">Invulnerable
+
+            <input id="Weapon-Targets-1-Invulnerable"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('invulnerable')"
+                   type="checkbox" tabindex="-1" value="invulnerable"/>
+
+            <span *ngIf="isChecked('invulnerable')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('invulnerable')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Item">Item
+
+            <input id="Weapon-Targets-1-Item"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('item')"
+                   type="checkbox" tabindex="-1" value="item"/>
+
+            <span *ngIf="isChecked('item')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('item')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Mechanical">Mechanical
+
+            <input id="Weapon-Targets-1-Mechanical"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('mechanical')"
+                   type="checkbox" tabindex="-1" value="mechanical"/>
+
+            <span *ngIf="isChecked('mechanical')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('mechanical')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Neutral">Neutral
+
+            <input id="Weapon-Targets-1-Neutral"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('neutral')"
+                   type="checkbox" tabindex="-1" value="neutral"/>
+
+            <span *ngIf="isChecked('neutral')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('neutral')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+      </ul>
+      <ul>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-NonAncient">Non-Ancient
+
+            <input id="Weapon-Targets-1-NonAncient"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('nonancient')"
+                   type="checkbox" tabindex="-1" value="nonancient"/>
+
+            <span *ngIf="isChecked('nonancient')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('nonancient')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-NonHero">Non-Hero
+
+            <input id="Weapon-Targets-1-NonHero"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('nonhero')"
+                   type="checkbox" tabindex="-1" value="nonhero"/>
+
+            <span *ngIf="isChecked('nonhero')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('nonhero')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Nonsuicidal">Non-suicidal
+
+            <input id="Weapon-Targets-1-Nonsuicidal"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('nonsapper')"
+                   type="checkbox" tabindex="-1" value="nonsapper"/>
+
+            <span *ngIf="isChecked('nonsapper')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('nonsapper')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-None">None
+
+            <input id="Weapon-Targets-1-None"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('none')"
+                   type="checkbox" tabindex="-1" value="none"/>
+
+            <span *ngIf="isChecked('none')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('none')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Notself">Not self
+
+            <input id="Weapon-Targets-1-Notself"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('notself')"
+                   type="checkbox" tabindex="-1" value="notself"/>
+
+            <span *ngIf="isChecked('notself')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('notself')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Organic">Organic
+
+            <input id="Weapon-Targets-1-Organic"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('organic')"
+                   type="checkbox" tabindex="-1" value="organic"/>
+
+            <span *ngIf="isChecked('organic')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('organic')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-PlayerUnits">Player Units
+
+            <input id="Weapon-Targets-1-PlayerUnits"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('player')"
+                   type="checkbox" tabindex="-1" value="player"/>
+
+            <span *ngIf="isChecked('player')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('player')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Self">Self
+
+            <input id="Weapon-Targets-1-Self"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('self')"
+                   type="checkbox" tabindex="-1" value="self"/>
+
+            <span *ngIf="isChecked('self')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('self')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+      </ul>
+      <ul>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Structure">Structure
+
+            <input id="Weapon-Targets-1-Structure"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('structure')"
+                   type="checkbox" tabindex="-1" value="structure"/>
+
+            <span *ngIf="isChecked('structure')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('structure')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Suicidal">Suicidal
+
+            <input id="Weapon-Targets-1-Suicidal"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('sapper')"
+                   type="checkbox" tabindex="-1" value="sapper"/>
+
+            <span *ngIf="isChecked('sapper')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('sapper')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Terrain">Terrain
+
+            <input id="Weapon-Targets-1-Terrain"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('terrain')"
+                   type="checkbox" tabindex="-1" value="terrain"/>
+
+            <span *ngIf="isChecked('terrain')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('terrain')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Tree">Tree
+
+            <input id="Weapon-Targets-1-Tree"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('tree')"
+                   type="checkbox" tabindex="-1" value="tree"/>
+
+            <span *ngIf="isChecked('tree')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('tree')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Vulnerable">Vulnerable
+
+            <input id="Weapon-Targets-1-Vulnerable"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('vulnerable')"
+                   type="checkbox" tabindex="-1" value="vulnerable"/>
+
+            <span *ngIf="isChecked('vulnerable')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('vulnerable')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Wall">Wall
+
+            <input id="Weapon-Targets-1-Wall"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('wall')"
+                   type="checkbox" tabindex="-1" value="wall"/>
+
+            <span *ngIf="isChecked('wall')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('wall')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+        <li class="checkbox">
+          <label for="Weapon-Targets-1-Ward">Ward
+
+            <input id="Weapon-Targets-1-Ward"
+                   (change)="SaveField($event)"
+                   class="sub-multi-check"
+                   [disabled]="disabled"
+                   [ngModel]="isChecked('ward')"
+                   type="checkbox" tabindex="-1" value="ward"/>
+
+            <span *ngIf="isChecked('ward')">
+              <i class="far fa-check-square checked"></i>
+            </span>
+            <span *ngIf="!isChecked('ward')">
+              <i class="far fa-square unchecked"></i>
+            </span>
+          </label>
+
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

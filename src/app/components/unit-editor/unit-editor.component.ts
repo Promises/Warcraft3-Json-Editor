@@ -1,12 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { WorldEditService } from '../../services/WorldEditService/world-edit.service';
 import { ElectronMenuService } from '../../services/ElectronMenuService/electron-menu.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ElectronService } from 'ngx-electron';
-import { lookupService } from 'dns';
-import { readFile, existsSync, readFileSync, writeFile, writeFileSync } from 'fs';
+import { readFile, existsSync, writeFileSync } from 'fs';
 import { WCUnit } from '../../data/Unit';
-import { log } from 'util';
 import { KeyValue } from '@angular/common';
 import * as path from 'path';
 import * as Translator from 'wc3maptranslator';
@@ -22,7 +20,6 @@ export class UnitEditorComponent implements OnInit {
   private loading: boolean = true;
   private UnitData: any;
   private UnitMap: Map<string, WCUnit>;
-  private BaseUnits: Map<string, WCUnit>;
 
   private hasData: boolean = false;
   private FilteredUnitMap: Map<string, WCUnit>;
@@ -151,7 +148,6 @@ export class UnitEditorComponent implements OnInit {
     this.currentForm = this.worldEditService.CreateUnitForm(entry.value);
     this.selectedUnit = entry;
 
-    console.log(entry);
 
     this.changeDetector.detectChanges();
     this.currentForm.valueChanges.subscribe((changes) => {
@@ -329,7 +325,6 @@ export class UnitEditorComponent implements OnInit {
   }
 
   public FormattedText(text: string): string {
-    console.log('updating');
     const regex = new RegExp('\\|C([0-9A-F]{8})((?:(?!\\|C).)*)\\|R', 'i');
     let result = text.split('|n').join('<br>').split('\n').join('<br>');
     let exec = regex.exec(result);
@@ -343,7 +338,6 @@ export class UnitEditorComponent implements OnInit {
   }
 
   private FormChanges(changes: any): void {
-    console.log(changes);
     this.selectedUnit.value.setValues(changes);
     this.changeDetector.detectChanges();
 
