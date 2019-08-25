@@ -57,8 +57,29 @@
                 [options]="worldEditService.ArmourTypes"
                 formControlName="uarm"
                 fieldName="uarm">
-              </app-drop-down-select-field> <!-- Unit Acquisition Range -->
+              </app-drop-down-select-field> <!-- Unit Armour type -->
+              <app-integer-field formControlName="ubs1" fieldName="ubs1" [step]="0.1"></app-integer-field> <!-- Animation Backswing Point - 1 -->
+              <app-integer-field formControlName="udp1" fieldName="udp1" [step]="0.1"></app-integer-field> <!-- Animation Damage Point - 1 -->
+              <app-integer-field formControlName="ua1f" fieldName="ua1f"></app-integer-field> <!-- AOE (Full) - 1 -->
+              <app-integer-field formControlName="ua1h" fieldName="ua1h"></app-integer-field> <!-- AOE (Meduim) - 1 -->
+              <app-integer-field formControlName="ua1q" fieldName="ua1q"></app-integer-field> <!-- AOE (Small) - 1 -->
               <app-target-list-field formControlName="ua1g" fieldName="ua1g"></app-target-list-field> <!-- AOE Targets 1 -->
+              <app-drop-down-select-field
+                [options]="worldEditService.AttackTypes"
+                formControlName="ua1t"
+                fieldName="ua1t">
+              </app-drop-down-select-field> <!-- Attack type 1 -->
+              <app-integer-field formControlName="ua1c" fieldName="ua1c" [step]="0.1"></app-integer-field> <!-- Cooldown Time - 1 -->
+              <app-integer-field formControlName="ua1b" fieldName="ua1b"></app-integer-field> <!-- Damage Base - 1 -->
+              <app-integer-field formControlName="uhd1" fieldName="uhd1"></app-integer-field> <!-- Damage Factor medium - 1 -->
+              <app-integer-field formControlName="uqd1" fieldName="uqd1"></app-integer-field> <!-- Damage Factor small - 1 -->
+              <app-integer-field formControlName="udl1" fieldName="udl1"></app-integer-field> <!-- Damage loss factor - 1 -->
+              <app-integer-field formControlName="ua1d" fieldName="ua1d"></app-integer-field> <!-- Damage number of dice - 1 -->
+              <app-integer-field formControlName="ua1s" fieldName="ua1s"></app-integer-field> <!-- Damage sider per die - 1 -->
+              <app-integer-field formControlName="usd1" fieldName="usd1"></app-integer-field> <!-- Damage spill distance - 1 -->
+              <app-integer-field formControlName="usr1" fieldName="usr1"></app-integer-field> <!-- Damage spill radius - 1 -->
+
+
             </div>
           </div>
           <!-- End Section Combat -->

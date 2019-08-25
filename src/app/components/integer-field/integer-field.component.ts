@@ -21,6 +21,7 @@ export class IntegerFieldComponent {
   public onChange: (value: string) => void;
   public onTouched: () => void;
   public disabled: boolean;
+  @Input() public step: number = 1;
 
   constructor(public weService: WorldEditService) {
   }

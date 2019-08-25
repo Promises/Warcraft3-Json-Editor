@@ -1,6 +1,7 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { WorldEditService } from '../../services/WorldEditService/world-edit.service';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { SelectValue } from '../../data/Fields';
 
 @Component({
   selector: 'app-drop-down-select-field',
@@ -16,7 +17,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class DropDownSelectFieldComponent {
   @Input() public fieldName: string;
-  @Input() public options: string[];
+  @Input() public options: SelectValue[];
   public value: string;
   public active: boolean = false;
   public onChange: (value: string) => void;

@@ -19,6 +19,11 @@ export interface UnitFieldDefinition {
   type: string;
 }
 
+export interface SelectValue {
+  value: string;
+  display: string;
+}
+
 const UnitFieldsArray: any[] = [
   ['utip', {id: 'utip', verbose: 'Tooltip', type: "string"}],
   ['uhot', {id: 'uhot', verbose: 'Hotkey', type: "string"}],

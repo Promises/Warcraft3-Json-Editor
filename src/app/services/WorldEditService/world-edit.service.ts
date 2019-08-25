@@ -3,7 +3,7 @@ import { createInterface, ReadLine } from 'readline';
 import { createReadStream, existsSync, readFile, readFileSync } from 'fs';
 import * as path from 'path';
 import { UnitField, WCUnit } from '../../data/Unit';
-import { UnitFieldsMap } from '../../data/Fields';
+import { SelectValue, UnitFieldsMap } from '../../data/Fields';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Injectable({
@@ -23,14 +23,23 @@ export class WorldEditService {
     'UnitWeapons.slk'
   ];
   public FIELD_ID_INDEXED: string = 'INDX';
-  public ArmourTypes: string[] = [
-    'Ethereal',
-    'Flesh',
-    'Metal',
-    'Stone',
-    'Wood'
+  public ArmourTypes: SelectValue[] = [
+    {value: 'Ethereal', display: 'Ethereal'},
+    {value: 'Flesh', display: 'Flesh'},
+    {value: 'Metal', display: 'Metal'},
+    {value: 'Stone', display: 'Stone'},
+    {value: 'Wood', display: 'Wood'}
   ];
-
+  public AttackTypes: SelectValue[] = [
+    {value: 'unknown', display: 'None'},
+    {value: 'normal', display: 'Normal'},
+    {value: 'pierce', display: 'Pierce'},
+    {value: 'siege', display: 'Siege'},
+    {value: 'spells', display: 'Spells'},
+    {value: 'chaos', display: 'Chaos'},
+    {value: 'magic', display: 'Magic'},
+    {value: 'hero', display: 'Hero'}
+  ];
 
   constructor(private fb: FormBuilder) {
     this.LoadWorldEditString();
