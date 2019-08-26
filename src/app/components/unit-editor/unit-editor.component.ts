@@ -26,7 +26,7 @@ export class UnitEditorComponent implements OnInit {
   private filterForm: FormGroup;
   private currentLoadedFile: string;
   private hasLoadedJson: boolean = false;
-  private currentForm: FormGroup;
+  private currentForm: FormGroup = this.BlankForm();
   private selectedUnit: KeyValue<string, WCUnit>;
 
   constructor(public worldEditService: WorldEditService,
@@ -406,5 +406,15 @@ export class UnitEditorComponent implements OnInit {
         }
       }
     );
+  }
+
+  private BlankForm(): FormGroup {
+    const form: FormGroup = this.worldEditService.BlankUnitForm();
+    for (const ctrl in form.controls) {
+      if (form.get(ctrl)) {
+        form.get(ctrl).disable();
+      }
+    }
+    return form;
   }
 }

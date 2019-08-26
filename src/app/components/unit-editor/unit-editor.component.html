@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="col editor"> <!-- Editor -->
-      <div *ngIf="selectedUnit">
+      <div>
         <form [formGroup]="currentForm" style="max-height: 100vh; overflow-y: scroll">
           <!-- Section Abilities -->
           <div class="card">
@@ -84,6 +84,16 @@
           </div>
           <!-- End Section Combat -->
 
+          <!-- Section Stats -->
+          <div class="card">
+            <h5 class="card-header">Stats</h5>
+            <div class="card-body">
+              <app-integer-field formControlName="ugol" fieldName="ugol"></app-integer-field> <!-- Gold Cost -->
+
+            </div>
+          </div>
+          <!-- End Section Stats -->
+
           <!-- Section TechTree -->
           <div class="card">
             <h5 class="card-header">Techtree</h5>
@@ -106,8 +116,8 @@
               <app-string-field formControlName="uhot" fieldName="uhot"></app-string-field> <!-- Unit Hotkey -->
               <app-string-field formControlName="utip" fieldName="utip"></app-string-field> <!-- Unit ToolTip - basic -->
               <div class="form-group row">
-                <label for="utub" class="col-sm-2 col-form-label">{{worldEditService.FieldToName('utub')}}</label>
-                <div class="col-sm-10">
+                <label for="utub" class="col-sm-3 col-form-label">{{worldEditService.FieldToName('utub')}}</label>
+                <div class="col-sm-9">
                   <div style="display: flex; overflow-x: hidden;">
                                         <textarea
                                           class="form-control"

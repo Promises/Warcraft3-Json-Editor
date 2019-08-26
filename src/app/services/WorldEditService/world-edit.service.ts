@@ -330,6 +330,15 @@ export class WorldEditService {
   }
 
   public CreateUnitForm(selectedUnit: WCUnit): FormGroup {
+    const formgroup: FormGroup = this.BlankUnitForm();
+
+    formgroup.patchValue(this.DefaultUnits.get(selectedUnit.baseUnit));
+    formgroup.patchValue(selectedUnit);
+
+    return formgroup;
+  }
+
+  public BlankUnitForm(): FormGroup {
     const formgroup: FormGroup = this.fb.group({
       utip: [''],
       uhot: [''],
@@ -494,10 +503,6 @@ export class WorldEditService {
       udtm: [null],
       ubpr: [''],
     });
-
-    formgroup.patchValue(this.DefaultUnits.get(selectedUnit.baseUnit));
-    formgroup.patchValue(selectedUnit);
-
     return formgroup;
   }
 
