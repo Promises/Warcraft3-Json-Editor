@@ -148,7 +148,6 @@ export class UnitEditorComponent implements OnInit {
     this.currentForm = this.worldEditService.CreateUnitForm(entry.value);
     this.selectedUnit = entry;
 
-
     this.changeDetector.detectChanges();
     this.currentForm.valueChanges.subscribe((changes) => {
       this.FormChanges(changes);
@@ -410,11 +409,11 @@ export class UnitEditorComponent implements OnInit {
 
   private BlankForm(): FormGroup {
     const form: FormGroup = this.worldEditService.BlankUnitForm();
-    for (const ctrl in form.controls) {
-      if (form.get(ctrl)) {
-        form.get(ctrl).disable();
-      }
-    }
+    // for (const ctrl in form.controls) {
+    //   if (form.get(ctrl)) {
+    //     form.get(ctrl).disable();
+    //   }
+    // }
     return form;
   }
 }

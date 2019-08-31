@@ -35,7 +35,7 @@
         </table>
       </div>
     </div>
-    <div class="col editor"> <!-- Editor -->
+    <div class="col editor" *ngIf="worldEditService.ready"> <!-- Editor -->
       <div>
         <form [formGroup]="currentForm" style="max-height: 100vh; overflow-y: scroll">
           <!-- Section Abilities -->
