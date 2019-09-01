@@ -2,18 +2,16 @@ import { Injectable } from '@angular/core';
 import { createInterface, ReadLine } from 'readline';
 import { createReadStream, existsSync, readFile, readFileSync } from 'fs';
 import * as path from 'path';
-import { UnitField, WCUnit } from '../../data/Unit';
-import { SelectValue, UnitFieldsMap } from '../../data/Fields';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { WC3ObjectHandler } from 'wc3-objectified-handler';
+import { SelectValue } from 'wc3-objectified-handler/dist/lib/data/Fields';
+import { WCUnit } from 'wc3-objectified-handler/dist/lib/data/Unit';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorldEditService {
   private WEStrings: Map<string, string> = new Map<string, string>();
-  private DefaultUnits: Map<string, WCUnit> = new Map<string, WCUnit>();
-  private FieldData: Map<string, UnitField> = new Map<string, UnitField>();
-  private SlkFieldBindings: Map<string, string> = new Map<string, string>();
   private SlkFileNames: string[] = [
     'CampaignUnitFunc.txt',
     'UnitAbilities.slk',
@@ -41,14 +39,14 @@ export class WorldEditService {
     {value: 'hero', display: 'Hero'}
   ];
   public ready: boolean = false;
+  public objectHandler: WC3ObjectHandler;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, ) {
+    this.objectHandler = new WC3ObjectHandler();
+    this.objectHandler.LoadUnitFieldConstants();
+    this.objectHandler.LoadDefaultUnits();
     this.LoadWorldEditString();
-    this.LoadUnitFieldConstants().then((data) => {
-      this.LoadDefaultUnits();
-      this.ready = true;
-      // console.log(data.get('uabi').slk);
-    });
+    this.ready = true;
 
   }
 
@@ -76,44 +74,6 @@ export class WorldEditService {
 
   }
 
-  public LoadUnitFieldConstants(): Promise<Map<string, UnitField>> {
-    return new Promise<Map<string, UnitField>>((resolve, reject) => {
-      readFile(path.join(__dirname, '..', 'UnitMetaData.json'), (err, data: any) => {
-        const fieldData: any = JSON.parse(data);
-        // console.log('loaded field data');
-        for (const key in fieldData) {
-          if (fieldData.hasOwnProperty(key)) {
-            if (UnitFieldsMap.has(key)) {
-              if (fieldData[key].type !== UnitFieldsMap.get(key).type) {
-                console.log(key);
-              }
-            }
-            this.FieldData.set(key, fieldData[key]);
-          }
-        }
-        const indexed: string[] = [];
-        this.FieldData.forEach((value, key) => {
-          if (value.index === '-1' || value.index === '0') {
-            this.SlkFieldBindings.set(value.field, key);
-          } else {
-            this.SlkFieldBindings.set(value.field + value.index, key);
-            indexed.push(value.field);
-          }
-        });
-        indexed.forEach((value => {
-          if (this.SlkFieldBindings.has(value)) {
-            const d: UnitField = this.FieldData.get(this.SlkFieldBindings.get(value));
-            this.SlkFieldBindings.set(d.field, this.FIELD_ID_INDEXED);
-            this.SlkFieldBindings.set(d.field + d.index, d.ID);
-          } else {
-            console.error(value);
-          }
-        }));
-        resolve(this.FieldData);
-      });
-    });
-  }
-
   /**
    * Get a World Edit string
    * @param key of string
@@ -130,9 +90,6 @@ export class WorldEditService {
     return this.WEStrings.has(key);
   }
 
-  public SlkFieldToUnitField(key: string): string {
-    return this.SlkFieldBindings.get(key);
-  }
 
   public SlkFilesExists(baseDir: string): boolean {
     for (const fileName of this.SlkFileNames) {
@@ -171,7 +128,6 @@ export class WorldEditService {
       });
 
       let body: boolean = false;
-      let matched: boolean = false;
       const indxToField: Map<number, string> = new Map<number, string>();
       let currentUnit: WCUnit;
 
@@ -203,7 +159,7 @@ export class WorldEditService {
               if (UnitMap.has(unitId)) {
                 currentUnit = UnitMap.get(unitId);
               } else {
-                currentUnit = new WCUnit({isCustom: true, baseUnit: 'nntg'});
+                currentUnit = new WCUnit(unitId, {isCustom: true, baseUnit: 'nntg'});
                 UnitMap.set(unitId, currentUnit);
               }
               // console.log(unitId);
@@ -215,14 +171,14 @@ export class WorldEditService {
                   data = '';
                 }
               }
-              const fieldname: string = this.SlkFieldBindings.get(indxToField.get(Number(mtch[1])));
+              const fieldname: string = this.objectHandler.SlkFieldToUnitField(indxToField.get(Number(mtch[1])));
               // try {
               //   this.FieldData.get(fieldname).type;
               // } catch (e) {
               //   console.log(this.SlkFieldBindings.get(indxToField.get(Number(mtch[1]))));
               // }
               if (fieldname) {
-                currentUnit[fieldname] = this.CleanType(fieldname, data);
+                currentUnit[fieldname] = this.objectHandler.CleanType(fieldname, data);
 
               } else {
                 // console.log(line);
@@ -263,21 +219,21 @@ export class WorldEditService {
             if (UnitMap.has(unitId)) {
               currentUnit = UnitMap.get(unitId);
             } else {
-              currentUnit = new WCUnit({isCustom: true, baseUnit: 'nntg'});
+              currentUnit = new WCUnit(unitId, {isCustom: true, baseUnit: 'nntg'});
               UnitMap.set(unitId, currentUnit);
             }
           } else {
             const linedata: string[] = line.split('=');
-            const field: string = this.SlkFieldToUnitField(linedata[0]);
+            const field: string = this.objectHandler.SlkFieldToUnitField(linedata[0]);
             if (field) {
               if (field === this.FIELD_ID_INDEXED) {
                 const fldData: string[] = linedata[1].split(',');
                 for (let i: number = 0; i < fldData.length; i++) {
-                  const fieldName: string = this.SlkFieldToUnitField(linedata[0] + i);
-                  currentUnit[fieldName] = this.CleanType(fieldName, fldData[i]);
+                  const fieldName: string = this.objectHandler.SlkFieldToUnitField(linedata[0] + i);
+                  currentUnit[fieldName] = this.objectHandler.CleanType(fieldName, fldData[i]);
                 }
               } else {
-                const fieldName: string = this.SlkFieldToUnitField(linedata[0]);
+                const fieldName: string = this.objectHandler.SlkFieldToUnitField(linedata[0]);
                 let data: string = linedata[1];
                 if (data.startsWith('"')) {
                   data = data.substr(1, data.length - 2);
@@ -285,7 +241,7 @@ export class WorldEditService {
                     data = '';
                   }
                 }
-                currentUnit[fieldName] = this.CleanType(fieldName, data);
+                currentUnit[fieldName] = this.objectHandler.CleanType(fieldName, data);
               }
 
             } else {
@@ -309,31 +265,11 @@ export class WorldEditService {
     });
   }
 
-  public GetUnitFieldData(fieldName: string): UnitField {
-    return this.FieldData.get(fieldName);
-  }
-
-  private CleanType(fieldName: string, data: string): any {
-
-    switch (this.FieldData.get(fieldName).type) {
-      case 'string':
-        return data;
-      case 'int':
-        return Number(data);
-      case 'unreal':
-        return Number(data);
-      case 'real':
-        return Number(data);
-      default:
-        console.log('CleanType', `Couldn't find: ${this.FieldData.get(fieldName).type}`);
-        return data;
-    }
-  }
 
   public CreateUnitForm(selectedUnit: WCUnit): FormGroup {
     const formgroup: FormGroup = this.BlankUnitForm();
 
-    formgroup.patchValue(this.DefaultUnits.get(selectedUnit.baseUnit));
+    formgroup.patchValue(this.objectHandler.GetBaseUnit(selectedUnit.baseUnit));
     formgroup.patchValue(selectedUnit);
 
     return formgroup;
@@ -507,53 +443,10 @@ export class WorldEditService {
     return formgroup;
   }
 
-  private LoadDefaultUnits(): void {
-    readFile(path.join(__dirname, '..', 'DefaultUnits.json'), (err, data: any) => {
-      const unitData: any = JSON.parse(data);
-      // console.log('loaded field data');
-      for (const key in unitData) {
-        if (unitData.hasOwnProperty(key)) {
-          const u: WCUnit = new WCUnit({isCustom: false});
-          for (const field in unitData[key]) {
-            if (unitData[key].hasOwnProperty(field)) {
-              let fld = this.SlkFieldToUnitField(field);
-              if (fld) {
-                let d: string = unitData[key][field];
-                if (d.startsWith('"')) {
-                  d = d.substr(1, d.length - 2);
 
-                }
-                if (d === '_' || d === '-') {
-                  d = '';
-                }
-                u[fld] = this.CleanType(fld, d);
-              }
-            }
-          }
-          this.DefaultUnits.set(key, u);
-
-        }
-
-        // if (fieldData.hasOwnProperty(key)) {
-        //   if (UnitFieldsMap.has(key)) {
-        //     if (fieldData[key].type !== UnitFieldsMap.get(key).type) {
-        //       console.log(key);
-        //     }
-        //   }
-        //   this.FieldData.set(key, fieldData[key]);
-        // }
-      }
-
-
-    });
-  }
-
-  public GetBaseUnit(baseUnit: string): WCUnit {
-    return this.DefaultUnits.get(baseUnit);
-  }
 
   public FieldToName(field: string): string {
-    return this.WEStrings.get(this.GetUnitFieldData(field).displayName);
+    return this.WEStrings.get(this.objectHandler.GetUnitFieldData(field).displayName);
   }
 }
 

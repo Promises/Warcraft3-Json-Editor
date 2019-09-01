@@ -33,6 +33,7 @@
     "ngx-electron": "^2.1.1",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
+    "wc3-objectified-handler": "0.0.7",
     "wc3maptranslator": "^2.0.0",
     "zone.js": "~0.9.1"
   },

@@ -3,12 +3,12 @@ import { WorldEditService } from '../../services/WorldEditService/world-edit.ser
 import { ElectronMenuService } from '../../services/ElectronMenuService/electron-menu.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ElectronService } from 'ngx-electron';
-import { readFile, existsSync, writeFileSync } from 'fs';
-import { WCUnit } from '../../data/Unit';
+import { existsSync, readFile } from 'fs';
 import { KeyValue } from '@angular/common';
 import * as path from 'path';
 import * as Translator from 'wc3maptranslator';
 import * as storage from 'electron-json-storage';
+import { WCUnit } from 'wc3-objectified-handler/dist/lib/data/Unit';
 
 
 @Component({
@@ -88,7 +88,7 @@ export class UnitEditorComponent implements OnInit {
         readFile(filenames.filePaths[0], (err, data: any) => {
           this.currentLoadedFile = filenames.filePaths[0];
           const ud: any = JSON.parse(data);
-          this.UnitMap = this.ParseJsonObject(ud);
+          this.UnitMap = this.worldEditService.objectHandler.ParseJsonObject(ud);
           this.hasLoadedJson = true;
           return resolve(true);
         });
@@ -100,23 +100,6 @@ export class UnitEditorComponent implements OnInit {
     }
   }
 
-  private ParseJsonObject(data: any): Map<string, WCUnit> {
-    const UnitMap: Map<string, WCUnit> = new Map<string, WCUnit>();
-
-    for (const unit in data.custom) {
-      if (data.custom.hasOwnProperty(unit)) {
-        const relation: string[] = unit.split(':');
-        const u: WCUnit = new WCUnit({isCustom: true, baseUnit: relation[1]});
-        u.setDefaults(this.worldEditService.GetBaseUnit(u.baseUnit), u.baseUnit);
-        for (const attr of data.custom[unit]) {
-          u[attr.id] = attr.value;
-        }
-        UnitMap.set(relation[0], u);
-      }
-    }
-    this.UnitData = data;
-    return UnitMap;
-  }
 
   private LoadWc3UnitObject(filenames: Electron.OpenDialogReturnValue): Promise<boolean> {
     if (filenames.filePaths) {
@@ -124,7 +107,7 @@ export class UnitEditorComponent implements OnInit {
 
         readFile(filenames.filePaths[0], (err, data: any) => {
           const result: any = new Translator.Objects.warToJson('units', data);
-          this.UnitMap = this.ParseJsonObject(result.json);
+          this.UnitMap = this.worldEditService.objectHandler.ParseJsonObject(result.json);
           this.currentLoadedFile = path.dirname(filenames.filePaths[0]) + '/Units.json';
           this.hasLoadedJson = false;
           return resolve(true);
@@ -135,10 +118,6 @@ export class UnitEditorComponent implements OnInit {
         reject(false);
       }));
     }
-  }
-
-  public HasLoadedData(): boolean {
-    return this.hasData;
   }
 
   private SelectUnit(entry: KeyValue<string, WCUnit>): void {
@@ -223,7 +202,14 @@ export class UnitEditorComponent implements OnInit {
 
   private SaveFile(data: boolean): void {
     if (this.hasLoadedJson) {
-      this.SaveJsonFile(this.currentLoadedFile, true);
+      this.hasLoadedJson = true;
+      this.currentLoadedFile = this.worldEditService.objectHandler.SaveObjectifiedJsonFile(this.currentLoadedFile, this.UnitMap);
+      storage.set('lastjson', {currentLoadedFile: this.currentLoadedFile}, (error) => {
+          if (error) {
+            throw error;
+          }
+        }
+      );
     } else {
       this.ExportFileDialog(data, true);
     }
@@ -239,42 +225,10 @@ export class UnitEditorComponent implements OnInit {
       ]
     }).then((p) => {
       // this.SaveObjectFile(p.filePath, setDefault);
-      this.SaveJsonFile(p.filePath, setDefault);
-    });
-  }
-
-  private SaveJsonFile(filePath: string, setDefault: boolean): void {
-    const saveobj: {} = {original: {}, custom: {}};
-    for (const [key, value] of this.UnitMap.entries()) {
-      const obj: any[] = [];
-      const baseUNit: WCUnit = this.worldEditService.GetBaseUnit(value.baseUnit);
-      if (value.utub) {
-        value.utub = value.utub.split('\n').join('|n');
-      }
-      for (const field in value) {
-
-        if (value.hasOwnProperty(field)) {
-          if (field !== 'isCustom' && field !== 'baseUnit') {
-            if (value[field] !== baseUNit[field]) {
-              const attribute: {} = {
-                id: field,
-                type: this.worldEditService.GetUnitFieldData(field).type,
-                value: value[field],
-              };
-              obj.push(attribute);
-            }
-
-          }
-        }
-
-      }
-      saveobj['custom'][key + ':' + value.baseUnit] = obj;
-    }
-    if (filePath) {
-      writeFileSync(filePath, JSON.stringify(saveobj, null, 2));
+      const savePath: string = this.worldEditService.objectHandler.SaveObjectifiedJsonFile(p.filePath, this.UnitMap);
       if (setDefault) {
+        this.currentLoadedFile = savePath;
         this.hasLoadedJson = true;
-        this.currentLoadedFile = filePath;
         storage.set('lastjson', {currentLoadedFile: this.currentLoadedFile}, (error) => {
             if (error) {
               throw error;
@@ -283,45 +237,45 @@ export class UnitEditorComponent implements OnInit {
         );
       }
 
-    }
-
+    });
   }
 
-  private SaveObjectFile(filePath: string, setDefault: boolean): void {
-    const saveobj: {} = {original: {}, custom: {}};
-    for (const [key, value] of this.UnitMap.entries()) {
-      const obj: any[] = [];
-      const baseUNit: WCUnit = this.worldEditService.GetBaseUnit(value.baseUnit);
-      for (const field in value) {
-        if (value.hasOwnProperty(field)) {
-          if (field !== 'isCustom' && field !== 'baseUnit') {
-            if (value[field] !== baseUNit[field]) {
-              const attribute: {} = {
-                id: field,
-                type: this.worldEditService.GetUnitFieldData(field).type,
-                value: value[field],
-              };
-              obj.push(attribute);
-            }
 
-          }
-        }
-
-      }
-      saveobj['custom'][key + ':' + value.baseUnit] = obj;
-    }
-    if (filePath) {
-      const objResult = new Translator.Objects.jsonToWar('units', saveobj); // Custom units -> war3map.w3u
-      writeFileSync(filePath, objResult.buffer);
-      // Write(WarFile.Object.Unit, objResult.buffer);
-      if (setDefault) {
-        this.hasLoadedJson = true;
-        this.currentLoadedFile = filePath;
-      }
-
-    }
-
-  }
+  // private SaveObjectFile(filePath: string, setDefault: boolean): void {
+  //   const saveobj: {} = {original: {}, custom: {}};
+  //   for (const [key, value] of this.UnitMap.entries()) {
+  //     const obj: any[] = [];
+  //     const baseUNit: WCUnit = this.worldEditService.GetBaseUnit(value.baseUnit);
+  //     for (const field in value) {
+  //       if (value.hasOwnProperty(field)) {
+  //         if (field !== 'isCustom' && field !== 'baseUnit') {
+  //           if (value[field] !== baseUNit[field]) {
+  //             const attribute: {} = {
+  //               id: field,
+  //               type: this.worldEditService.GetUnitFieldData(field).type,
+  //               value: value[field],
+  //             };
+  //             obj.push(attribute);
+  //           }
+  //
+  //         }
+  //       }
+  //
+  //     }
+  //     saveobj['custom'][key + ':' + value.baseUnit] = obj;
+  //   }
+  //   if (filePath) {
+  //     const objResult = new Translator.Objects.jsonToWar('units', saveobj); // Custom units -> war3map.w3u
+  //     writeFileSync(filePath, objResult.buffer);
+  //     // Write(WarFile.Object.Unit, objResult.buffer);
+  //     if (setDefault) {
+  //       this.hasLoadedJson = true;
+  //       this.currentLoadedFile = filePath;
+  //     }
+  //
+  //   }
+  //
+  // }
 
   public FormattedText(text: string): string {
     const regex = new RegExp('\\|C([0-9A-F]{8})((?:(?!\\|C).)*)\\|R', 'i');

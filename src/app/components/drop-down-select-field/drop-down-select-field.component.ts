@@ -1,7 +1,7 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { WorldEditService } from '../../services/WorldEditService/world-edit.service';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { SelectValue } from '../../data/Fields';
+import { SelectValue } from 'wc3-objectified-handler/dist/lib/data/Fields';
 
 @Component({
   selector: 'app-drop-down-select-field',
