@@ -9,6 +9,7 @@ import App = Electron.App;
 })
 export class ElectronMenuService {
   private clickedOpenFile: Subject<boolean> = new Subject<boolean>();
+  private clickedImportStrings: Subject<boolean> = new Subject<boolean>();
   private clickedOpenFolder: Subject<boolean> = new Subject<boolean>();
   private clickedExportFile: Subject<boolean> = new Subject<boolean>();
   private clickedSaveFile: Subject<boolean> = new Subject<boolean>();
@@ -62,6 +63,11 @@ export class ElectronMenuService {
           {
             label: 'Import Slk', click: () => {
               this.clickedOpenFolder.next(true);
+            }
+          },
+          {
+            label: 'Import Strings', click: () => {
+              this.clickedImportStrings.next(true);
             }
           },
           {type: 'separator'},
@@ -157,6 +163,10 @@ export class ElectronMenuService {
 
   public GetOpenFileSubject(): Subject<boolean> {
     return this.clickedOpenFile;
+  }
+
+  public GetImportStringsSubject(): Subject<boolean> {
+    return this.clickedImportStrings;
   }
 
   public GetOpenSlkFolderSubject(): Subject<boolean> {

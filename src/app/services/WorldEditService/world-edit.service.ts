@@ -41,7 +41,7 @@ export class WorldEditService {
   public ready: boolean = false;
   public objectHandler: WC3ObjectHandler;
 
-  constructor(private fb: FormBuilder, ) {
+  constructor(private fb: FormBuilder) {
     this.objectHandler = new WC3ObjectHandler();
     this.objectHandler.LoadUnitFieldConstants();
     this.objectHandler.LoadDefaultUnits();
@@ -444,9 +444,58 @@ export class WorldEditService {
   }
 
 
-
   public FieldToName(field: string): string {
     return this.WEStrings.get(this.objectHandler.GetUnitFieldData(field).displayName);
+  }
+
+  public ParseStrings(filePath: string): Promise<Map<number, string>> {
+    const stringMap: Map<number, string> = new Map<number, string>();
+    let currentNum: number;
+    let stage: number = 0;
+    let currentString: string = '';
+
+    return new Promise<Map<number, string>>((resolve, reject) => {
+      const rl: ReadLine = createInterface({
+        input: createReadStream(filePath)
+      });
+
+
+      // event is emitted after each line
+      rl.on('line', (line: string) => {
+        switch (stage) {
+          case 0:
+            if (line.includes('STRING ')) {
+              currentNum = +line.substr(7);
+              stage++;
+            }
+            break;
+          case 1:
+            if (line.startsWith('{')) {
+              stage++;
+            }
+            break;
+          case 2:
+            if (line.startsWith('}')) {
+              stringMap.set(currentNum, currentString);
+              currentString = '';
+              stage = 0;
+            } else {
+              if (currentString.length === 0) {
+                currentString = line;
+              } else {
+                currentString = `${currentString}|n${line}`;
+              }
+            }
+            break;
+        }
+      });
+
+      // end
+      rl.on('close', (line) => {
+        resolve(stringMap);
+      });
+    });
+
   }
 }
 

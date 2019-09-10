@@ -41,6 +41,7 @@ export class UnitEditorComponent implements OnInit {
     this.electronMenu.GetOpenSlkFolderSubject().subscribe((data) => this.OpenSlkFolderDialog(data));
     this.electronMenu.GetSaveFileSubject().subscribe((data) => this.SaveFile(data));
     this.electronMenu.GetExportFileSubject().subscribe((data) => this.ExportFileDialog(data, false));
+    this.electronMenu.GetImportStringsSubject().subscribe((data) => this.ImportStrings(data));
 
     this.filterForm = this.fb.group({
       filterValue: [null]
@@ -70,6 +71,55 @@ export class UnitEditorComponent implements OnInit {
               this.FilterUnits('');
               this.changeDetector.detectChanges();
             }));
+          } else {
+            reject(false);
+          }
+        }
+      );
+    } else {
+      return new Promise<boolean>(((resolve, reject) => {
+        reject(false);
+      }));
+    }
+  }
+
+  private ImportStrings(data: boolean): void {
+    this.electronService.remote.dialog.showOpenDialog({
+      properties: ['openFile'], filters: [
+        {name: 'Warcraft 3 Strings', extensions: ['wts']},
+      ]
+    }).then((filenames) => {
+      if (filenames.filePaths && filenames.filePaths[0]) {
+        this.LoadStrings(filenames).then((d) => {
+          // this.FinishedLoadingStrings(d);
+        });
+      }
+    });
+  }
+
+  private LoadStrings(filenames: Electron.OpenDialogReturnValue): Promise<boolean> {
+    if (filenames.filePaths) {
+      return new Promise<boolean>((resolve, reject) => {
+          if (existsSync(filenames.filePaths[0])) {
+            this.worldEditService.ParseStrings(filenames.filePaths[0]).then((data) => {
+              for (const unit of this.UnitMap.values()) {
+                for (const key in unit) {
+                  if (unit.hasOwnProperty(key)) {
+                    if (typeof unit[key] === 'string') {
+
+                      if (unit[key].startsWith('TRIGSTR_')) {
+                        unit[key] = data.get(+unit[key].substring(8));
+                      }
+                    }
+                  }
+                }
+
+              }
+              this.changeDetector.detectChanges();
+            });
+            // this.UnitMap = data;
+            // this.FilterUnits('');
+
           } else {
             reject(false);
           }
@@ -121,6 +171,7 @@ export class UnitEditorComponent implements OnInit {
   }
 
   private SelectUnit(entry: KeyValue<string, WCUnit>): void {
+    console.log(entry);
     if (entry.value.utub) {
       entry.value.utub = entry.value.utub.split('|n').join('\n');
     }
